@@ -9,6 +9,7 @@
 <template>
   <v-ons-page>
     <navbar></navbar>
+    <h3 id="score">0</h3>
     <button @click="startRecording()">解析開始</button>
     <button @click="endRecording()">解析終了</button>
     <hr>
@@ -101,7 +102,9 @@ var canvasContext;
 
 // 音声解析
 var audioAnalyser = null;
-
+var preSpectrums = [];
+var t = 0;
+var score = 0;
 
 // 録音バッファ作成（録音中自動で繰り返し呼び出される）
 var onAudioProcess = function(e) {
@@ -117,7 +120,15 @@ var onAudioProcess = function(e) {
     //audioData.push(bufferData);
 
     // 波形を解析
-    analyseVoice();
+    analyseVoice(); 
+
+    t += 1
+    if(t > 100) {
+      recordingFlg=false
+      console.log(score)
+      t = 0
+      score = 0
+    }
 };
 
 // 解析用処理
@@ -128,7 +139,7 @@ var analyseVoice = function() {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
     canvasContext.beginPath();
-
+    
     for (var i = 0, len = spectrums.length; i < len; i++) {
         //canvasにおさまるように線を描画
         var x = (i / len) * canvas.width;
@@ -148,8 +159,13 @@ var analyseVoice = function() {
             //Draw text (X)
             canvasContext.fillText(text, x, canvas.height);
         }
-    }
 
+        //scoreを計算
+        score += Math.pow(spectrums[i] - (preSpectrums[i] || 0), 2) / 100
+        var Score = document.getElementById('score');
+        Score.innerHTML = score;
+    }
+    preSpectrums = spectrums
     canvasContext.stroke();
 
     // x軸の線とラベル出力
@@ -237,13 +253,6 @@ export default {
         {
           title: 'えはまの奮発日記',
           detail: 'tinderで知り合った女性と食事することになりました。しかし女性の右手には...',
-          path: 'detail-plan',
-          color: '#085078',
-          courses: [{thumbnail:""}]
-        },
-        {
-          title: 'sawlowの遅漏体験',
-          detail: '...',
           path: 'detail-plan',
           color: '#085078',
           courses: [{thumbnail:""}]
