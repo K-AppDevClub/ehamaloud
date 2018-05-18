@@ -11,7 +11,6 @@
     <navbar></navbar>
     <h3>{{ score }}</h3>
     <button @click="startRecording()">解析開始</button>
-    <button @click="endRecording()">解析終了</button>
     <button @click="clear()">クリア</button>
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
@@ -23,6 +22,8 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 var src="https://code.jquery.com/jquery-3.2.1.js"
 var src="voice_analyse.js"
+function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
+
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
@@ -36,24 +37,23 @@ export default {
 
   data (){
     return {
-      canvasContext: null, audioAnalyser: null,
+      ctx: null, audioAnalyser: null,
       preSpectrums: [], audioData:  [],
       audioContext: new AudioContext(),
       bufferSize: 1024, recordingFlg: false,
       t: 0, score: 0,
       size: {
-        width: 500,
-        height: 500,
+        width: 500, height: 500,
       },
     }
   },
 
   methods: {
     startRecording() {
-      this.canvasContext = this.$refs.scope.getContext('2d');
+      this.ctx = this.$refs.scope.getContext('2d');
       this.clear()
       this.recordingFlg = true;
-      navigator.getUserMedia({audio: true}, this.record, (e)=>{ console.log(e) });
+      navigator.getUserMedia({audio: true}, this.record, (e) => { console.log(e) });
     },
 
     record(stream){
@@ -66,8 +66,6 @@ export default {
       // 音声解析関連
       this.audioAnalyser = this.audioContext.createAnalyser();
       this.audioAnalyser.fftSize = 2048;
-      var frequencyData = new Uint8Array(this.audioAnalyser.frequencyBinCount);
-      var timeDomainData = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       mediastreamsource.connect(this.audioAnalyser);
     },
 
@@ -88,37 +86,34 @@ export default {
     },
 
     drawSpectrums(spectrums, fsDivN){
-      this.canvasContext.clearRect(0, 0, this.size.width, this.size.height);
-      this.canvasContext.beginPath();
-      for (var i = 0, len = spectrums.length; i < len; i++) {
-        var x = (i / len) * this.size.width, y = (1 - (spectrums[i] / 255)) * this.size.height;
-        if (i === 0) {
-          this.canvasContext.moveTo(x, y);
-        } else {
-          this.canvasContext.lineTo(x, y);
-        }
+      var width = this.size.width, height = this.size.height, len=spectrums.length;
+      this.ctx.clearRect(0, 0, width, height);
+      this.ctx.beginPath();
+      each(spectrums, (spe, i) => { 
+        var x = (i / len) * width, y = (1 - (spe / 255)) * height;
+        if (i === 0) this.ctx.moveTo(x, y);
+        else         this.ctx.lineTo(x, y);
+        
+        //scoreを計算
+        this.score += Math.pow(spe - (this.preSpectrums[i] || 0), 2) / 100
+
         var f = Math.floor(i * fsDivN);  // index -> frequency;
         //500 Hz単位にy軸の線とラベル出力
-        if ((f % 500) === 0) {
-          var text = (f < 1000) ? (f + ' Hz') : ((f / 1000) + ' kHz');
-          this.canvasContext.fillRect(x, 0, 1, this.size.height);
-          this.canvasContext.fillText(text, x, this.size.height);
-        }
-
-        //scoreを計算
-        this.score += Math.pow(spectrums[i] - (this.preSpectrums[i] || 0), 2) / 100
-      }
+        if (!((f % 500) === 0)) return;
+        var text = (f < 1000) ? (f + ' Hz') : ((f / 1000) + ' kHz');
+        this.ctx.fillRect(x, 0, 1, height);
+        this.ctx.fillText(text, x, height);
+      });
       this.preSpectrums = spectrums
-      this.canvasContext.stroke();
+      this.ctx.stroke();
 
       // x軸の線とラベル出力
       var textYs = ['1.00', '0.50', '0.00'];
-      for (var i = 0, len = textYs.length; i < len; i++) {
-        var text = textYs[i];
-        var gy = (1 - parseFloat(text)) * this.size.height;
-        this.canvasContext.fillRect(0, gy, this.size.width, 1);
-        this.canvasContext.fillText(text, 0, gy);
-      }
+      each(textYs, (text, i) => {
+        var gy = (1 - parseFloat(text)) * height;
+        this.ctx.fillRect(0, gy, width, 1);
+        this.ctx.fillText(text, 0, gy);
+      });
     },
 
     onAudioProcess(e) {
@@ -130,7 +125,7 @@ export default {
     
       // 波形を解析
       this.analyseVoice();
-      if(this.t++ > 100) this.recordingFlg=false
+      if(this.t++ > 100) this.endRecording()
     }
   },
 };
