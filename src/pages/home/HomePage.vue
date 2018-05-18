@@ -9,8 +9,10 @@
 <template>
   <v-ons-page>
     <navbar></navbar>
-    <button @click="startRecording()">解析開始</button>
-    <button @click="endRecording()">解析終了</button>
+    <v-ons-input placeholder="スコア" float v-model="score"></v-ons-input>
+    <el-button type="primary" @click="startRecording()">開始</el-button>
+    <el-button type="primary" @click="endRecording()">終了</el-button>
+    <el-button type="primary" @click="postScore()">送信</el-button>
     <hr>
     <canvas id="canvas2" width="500" height="500"></canvas>
   
@@ -47,9 +49,7 @@ import RegionPage from '../../pages/region/Region';
 import DetailPlan from '../../pages/detail-plan/DetailPlan';
 import Navbar from '../../components/navbar/Navbar';
 import Config from '../../config/Config';
-
 var src="https://code.jquery.com/jquery-3.2.1.js"
-
 if (typeof AudioContext != "undefined") {
   console.log("ok")
 }else{
@@ -65,9 +65,7 @@ if (typeof AudioContext != "undefined") {
 //   source.connect(context.destination);
 // },function(err){ //エラー処理 
 // });
-
 // Prefer camera resolution nearest to 1280x720.
-
 // var constraints = { audio: true, video: { width: 1280, height: 720 } };
 // if (!navigator.mediaDevices) {
 //   console.log("getUserMedia() not supported.");
@@ -83,10 +81,8 @@ if (typeof AudioContext != "undefined") {
 // .catch(function(err) {
 //   console.log(err.name + ": " + err.message);
 // });
-
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
 // 変数定義
 var localMediaStream = null;
 var localScriptProcessor = null;
@@ -94,19 +90,14 @@ var audioContext = new AudioContext();
 var bufferSize = 1024;
 var audioData = []; // 録音データ
 var recordingFlg = false;
-
 // キャンバス
 var canvas;
 var canvasContext;
-
 // 音声解析
 var audioAnalyser = null;
-
-
 // 録音バッファ作成（録音中自動で繰り返し呼び出される）
 var onAudioProcess = function(e) {
     if (!recordingFlg) return;
-
     // 音声のバッファを作成
     var input = e.inputBuffer.getChannelData(0);
     var bufferData = new Float32Array(bufferSize);
@@ -115,20 +106,16 @@ var onAudioProcess = function(e) {
     }
     // console.log(bufferData)
     //audioData.push(bufferData);
-
     // 波形を解析
     analyseVoice();
 };
-
 // 解析用処理
 var analyseVoice = function() {
     var fsDivN = audioContext.sampleRate / audioAnalyser.fftSize;
     var spectrums = new Uint8Array(audioAnalyser.frequencyBinCount);
     audioAnalyser.getByteFrequencyData(spectrums);
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-
     canvasContext.beginPath();
-
     for (var i = 0, len = spectrums.length; i < len; i++) {
         //canvasにおさまるように線を描画
         var x = (i / len) * canvas.width;
@@ -149,9 +136,7 @@ var analyseVoice = function() {
             canvasContext.fillText(text, x, canvas.height);
         }
     }
-
     canvasContext.stroke();
-
     // x軸の線とラベル出力
     var textYs = ['1.00', '0.50', '0.00'];
     for (var i = 0, len = textYs.length; i < len; i++) {
@@ -163,22 +148,18 @@ var analyseVoice = function() {
         canvasContext.fillText(text, 0, gy);
     }
 }
-
-
 // 解析開始
 // 解析終了
-
-
 var src="voice_analyse.js"
-
 export default {
   name: 'posts-page',
   components: {
     LoadingIndicator,
-    Navbar,
+    Navbar
   },
   methods: {
     startRecording() {
+        console.log(this.score)
         recordingFlg = true;
         navigator.getUserMedia({audio: true}, function(stream) {
             // 録音関連
@@ -189,7 +170,6 @@ export default {
             mediastreamsource.connect(scriptProcessor);
             scriptProcessor.onaudioprocess = onAudioProcess;
             scriptProcessor.connect(audioContext.destination);
-
             // 音声解析関連
             audioAnalyser = audioContext.createAnalyser();
             audioAnalyser.fftSize = 2048;
@@ -199,13 +179,13 @@ export default {
         },
         function(e) {
             console.log(e);
+            
         });
         
     },
     endRecording(){
         recordingFlg = false;
     },
-
     goCreate() {
       this.$emit('push-page', CreatePlan)
     },
@@ -220,6 +200,17 @@ export default {
         }
       })
     },
+    postScore(){
+      this.axios.post('http://182.163.94.43:3002/scores', {
+        score: this.score,
+      })
+      .then(res => {
+        console.log(res)
+        console.log(this.score)
+        this.$emit('pop-page');
+        this.$ons.notification.alert('プランを作成しました');
+      });
+    },
   },
   mounted() {
     // this.axios.get("http://59.157.6.140:3000/plans")
@@ -233,6 +224,7 @@ export default {
   data() {
     return {
       config: Config,
+      score : 7,
       experiences: [
         {
           title: 'えはまの奮発日記',

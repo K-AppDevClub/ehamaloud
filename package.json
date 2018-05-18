@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@google/maps": "^0.4.6",
+    "animejs": "^2.2.0",
     "axios": "^0.16.2",
     "element-ui": "^2.3.4",
     "onsenui": "~2.9.0",
