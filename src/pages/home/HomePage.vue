@@ -14,83 +14,19 @@
     <button @click="endRecording()">解析終了</button>
     <hr>
     <canvas id="canvas2" width="500" height="500"></canvas>
-  
-  <div class='page-content' align='center'>
-    <v-ons-list> 
-      <v-ons-list-header>
-        <v-ons-icon icon="ion-favorite, material:md-favorite"></v-ons-icon>
-        リスト
-      </v-ons-list-header>
-      <v-ons-list-item @click="goRegion">地域:  {{currentArea.name}}</v-ons-list-item>
-      <v-ons-list-item @click="goRegion">並び順：人気順</v-ons-list-item>
-    </v-ons-list>
-    <!-- <v-ons-list-header>話題のデート体験記</v-ons-list-header> -->
-    <v-ons-card v-for='item in experiences' :v-bind='item' v-bind:key="item.id" @click="goPlan(item.id)">
-      <img v-bind:src="item.courses[0].thumbnail" style="width: 100%">
-      <div class="title">
-        {{ item.title }}
-      </div>
-      <div class="content">
-        {{ item.detail }}
-      </div>
-    </v-ons-card>
-    <v-ons-fab @click="goCreate" style="position:fixed;" modifier="material" position="bottom right" >
-      <v-ons-icon icon="md-plus"></v-ons-icon>
-    </v-ons-fab>
-  </div>
   </v-ons-page>
 </template>
 
 <script>
 import LoadingIndicator from '../../components/loading-indicator/LoadingIndicator';
-import CreatePlan from '../../pages/create-plan/CreatePlan';
-import RegionPage from '../../pages/region/Region';
-import DetailPlan from '../../pages/detail-plan/DetailPlan';
 import Navbar from '../../components/navbar/Navbar';
-import Config from '../../config/Config';
 
 var src="https://code.jquery.com/jquery-3.2.1.js"
-
-if (typeof AudioContext != "undefined") {
-  console.log("ok")
-}else{
-  console.log("ng")
-}
-// navigator.getMedia = navigator.getUserMedia ||
-//                      navigator.webkitGetUserMedia ||
-//                      navigator.mozGetUserMedia ||
-//                      navigator.msGetUserMedia;
-// navigator.getMedia ({ audio:true }, function(stream) {
-//   var context = new AudioContext();
-//   var source = context.createMediaStreamSource(stream);
-//   source.connect(context.destination);
-// },function(err){ //エラー処理 
-// });
-
-// Prefer camera resolution nearest to 1280x720.
-
-// var constraints = { audio: true, video: { width: 1280, height: 720 } };
-// if (!navigator.mediaDevices) {
-//   console.log("getUserMedia() not supported.");
-// }
-// navigator.mediaDevices.getUserMedia(constraints)
-// .then(function(stream) {
-//   var video = document.querySelector('video');
-//   video.src = window.URL.createObjectURL(stream);
-//   video.onloadedmetadata = function(e) {
-//     video.play();
-//   };
-// })
-// .catch(function(err) {
-//   console.log(err.name + ": " + err.message);
-// });
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 // 変数定義
-var localMediaStream = null;
-var localScriptProcessor = null;
 var audioContext = new AudioContext();
 var bufferSize = 1024;
 var audioData = []; // 録音データ
@@ -125,9 +61,6 @@ var onAudioProcess = function(e) {
     t += 1
     if(t > 100) {
       recordingFlg=false
-      console.log(score)
-      t = 0
-      score = 0
     }
 };
 
@@ -189,81 +122,50 @@ var src="voice_analyse.js"
 
 export default {
   name: 'posts-page',
+
   components: {
     LoadingIndicator,
     Navbar,
   },
+  data (){
+    return {
+      canvas: null,
+      ctx: null
+    }
+  },
+
   methods: {
     startRecording() {
         recordingFlg = true;
-        navigator.getUserMedia({audio: true}, function(stream) {
-            // 録音関連
-            localMediaStream = stream;
-            var scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
-            localScriptProcessor = scriptProcessor;
-            var mediastreamsource = audioContext.createMediaStreamSource(stream);
-            mediastreamsource.connect(scriptProcessor);
-            scriptProcessor.onaudioprocess = onAudioProcess;
-            scriptProcessor.connect(audioContext.destination);
-
-            // 音声解析関連
-            audioAnalyser = audioContext.createAnalyser();
-            audioAnalyser.fftSize = 2048;
-            var frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
-            var timeDomainData = new Uint8Array(audioAnalyser.frequencyBinCount);
-            mediastreamsource.connect(audioAnalyser);
-        },
+        navigator.getUserMedia({audio: true}, this.record, 
         function(e) {
             console.log(e);
         });
         
     },
+
+    record(stream){
+      var scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+      var mediastreamsource = audioContext.createMediaStreamSource(stream);
+      mediastreamsource.connect(scriptProcessor);
+      scriptProcessor.onaudioprocess = onAudioProcess;
+      scriptProcessor.connect(audioContext.destination);
+
+      // 音声解析関連
+      audioAnalyser = audioContext.createAnalyser();
+      audioAnalyser.fftSize = 2048;
+      var frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+      var timeDomainData = new Uint8Array(audioAnalyser.frequencyBinCount);
+      mediastreamsource.connect(audioAnalyser);
+    },
+
     endRecording(){
         recordingFlg = false;
     },
-
-    goCreate() {
-      this.$emit('push-page', CreatePlan)
-    },
-    goRegion() {
-      this.$emit('push-page', RegionPage)
-    },
-    goPlan(id) {
-      this.$emit('push-page', {
-        extends: DetailPlan,
-        onsNavigatorProps: {
-          plan_id: id,
-        }
-      })
-    },
   },
   mounted() {
-    // this.axios.get("http://59.157.6.140:3000/plans")
-    // .then((res) => {
-    //   console.log(res.data);
-    //   this.experiences = res.data
-    // });
     canvas = document.getElementById('canvas2');
     canvasContext = canvas.getContext('2d');
   },
-  data() {
-    return {
-      config: Config,
-      experiences: [
-        {
-          title: 'えはまの奮発日記',
-          detail: 'tinderで知り合った女性と食事することになりました。しかし女性の右手には...',
-          path: 'detail-plan',
-          color: '#085078',
-          courses: [{thumbnail:""}]
-        },
-      ],
-    };
-  },
-  computed: {
-    currentArea() {
-      return this.$store.state.currentArea;
-    },
-  }
 };
 </script>
