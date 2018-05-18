@@ -12,6 +12,7 @@
     <h3>{{ score }}</h3>
     <button @click="startRecording()">解析開始</button>
     <button @click="endRecording()">解析終了</button>
+    <button @click="clear()">クリア</button>
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
   </v-ons-page>
@@ -50,8 +51,8 @@ export default {
   methods: {
     startRecording() {
       this.canvasContext = this.$refs.scope.getContext('2d');
+      this.clear()
       this.recordingFlg = true;
-      this.t = 0, this.score = 0;
       navigator.getUserMedia({audio: true}, this.record, (e)=>{ console.log(e) });
     },
 
@@ -74,16 +75,21 @@ export default {
       this.recordingFlg = false;
     },
 
+    clear(){
+      this.t = 0, this.score = 0, this.preSpectrums = [];
+      this.drawSpectrums([0], 1)
+    },
+
     analyseVoice() {
       var fsDivN = this.audioContext.sampleRate / this.audioAnalyser.fftSize;
       var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       this.audioAnalyser.getByteFrequencyData(spectrums);
-      this.canvasContext.clearRect(0, 0, this.size.width, this.size.height);
-      this.canvasContext.beginPath();
       this.drawSpectrums(spectrums, fsDivN)
     },
 
     drawSpectrums(spectrums, fsDivN){
+      this.canvasContext.clearRect(0, 0, this.size.width, this.size.height);
+      this.canvasContext.beginPath();
       for (var i = 0, len = spectrums.length; i < len; i++) {
         var x = (i / len) * this.size.width, y = (1 - (spectrums[i] / 255)) * this.size.height;
         if (i === 0) {
