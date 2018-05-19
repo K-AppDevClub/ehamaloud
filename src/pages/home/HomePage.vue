@@ -17,6 +17,7 @@
     
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
+    <chart :width="size.width" :height="size.height" :chartData="chartData"></chart>
     <v-ons-list>
       <v-ons-list-header>過去ログ</v-ons-list-header>
       <v-ons-list-item v-for='log in logs' :v-bind='log' v-bind:key='log.id'> {{ log }} </v-ons-list-item>
@@ -27,6 +28,7 @@
 <script>
 import LoadingIndicator from '../../components/loading-indicator/LoadingIndicator';
 import Navbar from '../../components/navbar/Navbar';
+import Chart from './chart'
 var src="https://code.jquery.com/jquery-3.2.1.js"
 var src="voice_analyse.js"
 function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
@@ -40,6 +42,7 @@ export default {
   components: {
     LoadingIndicator,
     Navbar,
+    Chart,
   },
 
   data (){
@@ -52,8 +55,10 @@ export default {
       preSpectrums: [], audioContext: null,
       time: 3000, score: 0, margin: 10, startDate: false,
       size: {
-        width: 500, height: 500,
+        width: 500, height: 250,
       },
+      chartData: {labels: [],
+                  datasets: [{ label: "hoge", backgroundColor: "#f87979", data: []}]},
       logs: [], socre_list: [], idx: 0,
     }
   },
@@ -99,7 +104,9 @@ export default {
 
       // 描画
       this.drawSpectrums(spectrums)
-      this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums))
+      this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
+      this.chartData.labels = [...Array(this.socre_list.length).keys()]
+      this.chartData.datasets[0].data = this.socre_list
       if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
     },
 
@@ -107,6 +114,7 @@ export default {
       console.log(this.socre_list)
       this.recordingFlg = false;
       this.audioContext.close().then(this.addLogs);
+      console.log(this.chartData)
     },
 
     clear(){
