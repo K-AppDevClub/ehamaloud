@@ -40,7 +40,6 @@ export default {
     Navbar,
   },
 
-
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
