@@ -11,8 +11,10 @@
     <navbar></navbar>
     <h3>{{ score }}</h3>
     <h3>{{ timer }}秒</h3>
-    <button @click="startRecording()">解析開始</button>
-    <button @click="clear()">クリア</button>
+    <el-button type="primary" @click="startRecording()">開始</el-button>
+    <el-button type="primary" @click="postScore()">送信</el-button>
+    <el-button type="primary" @click="clear()">クリア</el-button>
+    
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
     <v-ons-list>
@@ -43,6 +45,10 @@ export default {
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
+      score: {  
+          score: '',
+          user_name: "ehama"
+      },
       preSpectrums: [], audioContext: null,
       time: 3000, score: 0, margin: 10, startDate: false,
       size: {
@@ -103,6 +109,7 @@ export default {
     },
 
     clear(){
+      console.log(this.score)
       this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
       this.clearCanvas();
     },
@@ -150,6 +157,19 @@ export default {
     addLogs(){
       this.logs.unshift(this.score);
       if (this.logs.length > 5) this.logs.pop()
+    },
+    postScore(){
+      this.axios.post('http://k-appdev.com:3001/scores', {
+        score: {  
+          score: this.score,
+          user_name: "ehama"
+        }
+      })
+      .then(res => {
+        console.log(res)
+        console.log(this.score.score)
+        this.$ons.notification.alert('スコアを送信しました');
+      });
     }
   },
 
