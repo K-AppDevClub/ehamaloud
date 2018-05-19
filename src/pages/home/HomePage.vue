@@ -9,7 +9,7 @@
 <template>
   <v-ons-page>
     <navbar></navbar>
-    <h3>{{ score }}</h3>
+    <h3>{{ rounded_score }}</h3>
     <h3>{{ timer }}秒</h3>
     <el-button type="primary" @click="startRecording()">開始</el-button>
     <el-button type="primary" @click="postScore()">送信</el-button>
@@ -155,13 +155,14 @@ export default {
     },
 
     addLogs(){
-      this.logs.unshift(this.score);
+      this.logs.unshift(this.rounded_score);
       if (this.logs.length > 5) this.logs.pop()
     },
+
     postScore(){
       this.axios.post('http://k-appdev.com:3001/scores', {
         score: {  
-          score: this.score,
+          score: this.rounded_score,
           user_name: "ehama"
         }
       })
@@ -176,7 +177,10 @@ export default {
   computed: {
     timer: function() {
       return this.time > 0 ? this.time / 1000 : 0;
-    }
+    },
+    rounded_score: function() {
+      return Math.round(this.score)
+    },
   }
 };
 </script>
