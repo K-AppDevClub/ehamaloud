@@ -31,24 +31,19 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
-
 var src="https://code.jquery.com/jquery-3.2.1.js"
 var src="voice_analyse.js"
 function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
-
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
 export default {
   name: 'posts-page',
-
   components: {
     LoadingIndicator,
     Navbar,
     Ranking,
     Chart,
   },
-
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
@@ -61,22 +56,17 @@ export default {
       size: {
         width: 500, height: 200,
       },
-
       logs: [],
       // routeName: Ranking,
-
       chartData: {labels: [],
                   datasets: [{ label: "hoge", backgroundColor: "#f87979", data: []}]},
       logs: [], socre_list: [], idx: 0,
-
     }
   },
-
   mounted: function(){
     this.ctx = this.$refs.scope.getContext('2d');
     this.clear();
   },
-
   methods: {
     startRecording() {
       this.clear();
@@ -84,7 +74,6 @@ export default {
       this.recordingFlg = true;
       navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) });
     },
-
     whenGtetUserMedia(stream){
       // 音声取得関連
       var scriptProcessor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
@@ -92,13 +81,11 @@ export default {
       mediastreamsource.connect(scriptProcessor);
       scriptProcessor.onaudioprocess = this.onAudioProcess;
       scriptProcessor.connect(this.audioContext.destination);
-
       // 音声解析関連
       this.audioAnalyser = this.audioContext.createAnalyser();
       this.audioAnalyser.fftSize = 2048;
       mediastreamsource.connect(this.audioAnalyser);
     },
-
     onAudioProcess(e) {
       if (!this.recordingFlg) return;
       // 音声のバッファを作成
@@ -110,7 +97,6 @@ export default {
       // 波形を解析
       var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       this.audioAnalyser.getByteFrequencyData(spectrums);
-
       // 描画
       this.drawSpectrums(spectrums)
       this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
@@ -124,7 +110,6 @@ export default {
         datasets:[ { label: "hoge", backgroundColor: "#f87979", data: this.socre_list } ]
       }
     },
-
     endRecording(){
       console.log(this.socre_list)
       this.recordingFlg = false;
@@ -137,12 +122,10 @@ export default {
       this.idx = 0, this.socre_list = []
       this.clearCanvas();
     },
-
     getSize(){
       var margin = this.margin
       return [margin, this.size.width-margin*2, this.size.height-margin*2];
     },
-
     drawSpectrums(spectrums){
       var [margin, w, h] = this.getSize();
       this.clearCanvas();
@@ -168,7 +151,6 @@ export default {
         this.ctx.fillRect(w*i+m, 0,   1, h);
       };
     },
-
     culcSocre(spectrums){
       var current_score = 0;
       each(spectrums, (s,i)=>{
@@ -177,14 +159,12 @@ export default {
       this.preSpectrums = spectrums;
       return current_score;
     },
-
     addLogs(){
       this.logs.unshift(this.rounded_score);
       if (this.logs.length > 5) this.logs.pop()
       this.postScore();
-      this.goTo('ranking');
+      //this.goTo('ranking');
     },
-
     postScore(){
       this.axios.post('http://k-appdev.com:3001/scores', {
         score: {  
@@ -203,7 +183,6 @@ export default {
       //store.commit('toggleMenu', false);
     },
   },
-
   computed: {
     timer: function() {
       return this.time > 0 ? this.time / 1000 : 0;
