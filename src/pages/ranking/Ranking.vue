@@ -2,8 +2,8 @@
   <ons-page>
     <navbar></navbar>
     <h1> ランキング♥ </h1>
-    <el-button type="primary" @click="checkid()">クリア</el-button>
-    
+    <!-- <el-button type="primary" @click="checkid()">クリア</el-button> -->
+    <h1> あなたは 何 位でした </h1>
     <v-ons-list>
           <v-ons-list-item v-for="score in scores.slice(0,10)" v-bind:key="score.id">
             <table cellpadding="5">

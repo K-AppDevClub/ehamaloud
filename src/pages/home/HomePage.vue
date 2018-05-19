@@ -12,9 +12,9 @@
     <h3>{{ rounded_score }}</h3>
     <h3>{{ timer }}秒</h3>
     <el-button type="primary" @click="startRecording()">開始</el-button>
-    <el-button type="primary" @click="postScore()">送信</el-button>
-    <el-button type="primary" @click="clear()">クリア</el-button>
-    <el-button type="primary" @click="$router.push({ name: 'ranking' });"></el-button>
+    <!-- <el-button type="primary" @click="postScore()">送信</el-button> -->
+    <!-- <el-button type="primary" @click="clear()">クリア</el-button> -->
+    <el-button type="primary" @click="$router.push({ name: 'ranking' });">ランキングへ</el-button>
     
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
