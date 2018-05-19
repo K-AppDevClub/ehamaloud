@@ -105,16 +105,22 @@ export default {
       // 描画
       this.drawSpectrums(spectrums)
       this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
-      this.chartData.labels = [...Array(this.socre_list.length).keys()]
-      this.chartData.datasets[0].data = this.socre_list
+      this.createChartData();
       if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
+    },
+    
+    createChartData (){
+      this.chartData = {
+        labels: [...Array(this.socre_list.length).keys()],
+        datasets:[ { label: "hoge", backgroundColor: "#f87979", data: this.socre_list } ]
+      }
     },
 
     endRecording(){
       console.log(this.socre_list)
       this.recordingFlg = false;
       this.audioContext.close().then(this.addLogs);
-      console.log(this.chartData)
+      console.log(this.chartData.datasets[0].data)
     },
 
     clear(){
