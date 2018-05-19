@@ -37,26 +37,29 @@ export default {
 
   data (){
     return {
-      ctx: null, audioAnalyser: null,
-      preSpectrums: [], audioData:  [],
-      audioContext: new AudioContext(),
-      bufferSize: 1024, recordingFlg: false,
-      t: 0, score: 0,
+      ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
+      preSpectrums: [], audioContext: new AudioContext(),
+      t: 0, score: 0, margin: 10,
       size: {
         width: 500, height: 500,
       },
     }
   },
 
+  mounted: function(){
+    this.ctx = this.$refs.scope.getContext('2d');
+    this.clear();
+  },
+
   methods: {
     startRecording() {
-      this.ctx = this.$refs.scope.getContext('2d');
       this.clear()
       this.recordingFlg = true;
-      navigator.getUserMedia({audio: true}, this.record, (e) => { console.log(e) });
+      navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) });
     },
 
-    record(stream){
+    whenGtetUserMedia(stream){
+      // 音声取得関連
       var scriptProcessor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
       var mediastreamsource = this.audioContext.createMediaStreamSource(stream);
       mediastreamsource.connect(scriptProcessor);
@@ -69,53 +72,6 @@ export default {
       mediastreamsource.connect(this.audioAnalyser);
     },
 
-    endRecording(){
-      this.recordingFlg = false;
-    },
-
-    clear(){
-      this.t = 0, this.score = 0, this.preSpectrums = [];
-      this.drawSpectrums([0], 1)
-    },
-
-    analyseVoice() {
-      var fsDivN = this.audioContext.sampleRate / this.audioAnalyser.fftSize;
-      var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
-      this.audioAnalyser.getByteFrequencyData(spectrums);
-      this.drawSpectrums(spectrums, fsDivN)
-    },
-
-    drawSpectrums(spectrums, fsDivN){
-      var width = this.size.width, height = this.size.height, len=spectrums.length;
-      this.ctx.clearRect(0, 0, width, height);
-      this.ctx.beginPath();
-      each(spectrums, (spe, i) => { 
-        var x = (i / len) * width, y = (1 - (spe / 255)) * height;
-        if (i === 0) this.ctx.moveTo(x, y);
-        else         this.ctx.lineTo(x, y);
-        
-        //scoreを計算
-        this.score += Math.pow(spe - (this.preSpectrums[i] || 0), 2) / 100
-
-        var f = Math.floor(i * fsDivN);  // index -> frequency;
-        //500 Hz単位にy軸の線とラベル出力
-        if (!((f % 500) === 0)) return;
-        var text = (f < 1000) ? (f + ' Hz') : ((f / 1000) + ' kHz');
-        this.ctx.fillRect(x, 0, 1, height);
-        this.ctx.fillText(text, x, height);
-      });
-      this.preSpectrums = spectrums
-      this.ctx.stroke();
-
-      // x軸の線とラベル出力
-      var textYs = ['1.00', '0.50', '0.00'];
-      each(textYs, (text, i) => {
-        var gy = (1 - parseFloat(text)) * height;
-        this.ctx.fillRect(0, gy, width, 1);
-        this.ctx.fillText(text, 0, gy);
-      });
-    },
-
     onAudioProcess(e) {
       if (!this.recordingFlg) return;
       // 音声のバッファを作成
@@ -124,9 +80,62 @@ export default {
       for (var i = 0; i < this.bufferSize; i++) bufferData[i] = input[i];
     
       // 波形を解析
-      this.analyseVoice();
+      var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
+      this.audioAnalyser.getByteFrequencyData(spectrums);
+      this.drawSpectrums(spectrums)
+      this.score += this.culcSocre(spectrums)
       if(this.t++ > 100) this.endRecording()
-    }
+    },
+
+    endRecording(){
+      this.recordingFlg = false;
+    },
+
+    clear(){
+      this.t = 0, this.score = 0, this.preSpectrums = [];
+      this.clearCanvas();
+    },
+
+    getSize(){
+      var margin = this.margin
+      return [margin, this.size.width-margin*2, this.size.height-margin*2];
+    },
+
+    drawSpectrums(spectrums){
+      var [margin, width, height] = this.getSize();
+      this.clearCanvas();
+      this.ctx.beginPath();
+      each(spectrums, (spe, i, len=spectrums.length) => { 
+        var x = (i / len) * width + 10, y = (1 - (spe / 255)) * height;
+        if (i === 0) this.ctx.moveTo(x, y);
+        else         this.ctx.lineTo(x, y);
+      });
+      this.ctx.stroke();
+    },
+    
+    clearCanvas(){
+      var [margin, w, h] = this.getSize();
+      this.ctx.clearRect(0, 0, w, h);
+      this.drawFrame()
+    },
+    
+    drawFrame(){
+      var [margin, w, h] = this.getSize();
+      for(var i in [0,1]){
+        this.ctx.fillRect(margin,     h*i, w, 1);
+        this.ctx.fillRect(w*i+margin, 0,   1, h);
+      };
+    },
+
+    culcSocre(spectrums){
+      var current_score = 0;
+      each(spectrums, (s,i)=>{
+        current_score += Math.pow(s - (this.preSpectrums[i] || 0), 2) / 100;
+      });
+      this.preSpectrums = spectrums;
+      return current_score;
+    },
+
   },
 };
 </script>
