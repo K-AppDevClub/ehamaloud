@@ -10,6 +10,7 @@
   <v-ons-page>
     <navbar></navbar>
     <h3>{{ score }}</h3>
+    <h3>{{ timer }}秒</h3>
     <button @click="startRecording()">解析開始</button>
     <button @click="clear()">クリア</button>
     <hr>
@@ -44,7 +45,7 @@ export default {
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
       preSpectrums: [], audioContext: null,
-      t: 0, score: 0, margin: 10,
+      time: 3000, score: 0, margin: 10, startDate: false,
       size: {
         width: 500, height: 500,
       },
@@ -82,6 +83,7 @@ export default {
     onAudioProcess(e) {
       if (!this.recordingFlg) return;
       // 音声のバッファを作成
+      this.startDate = this.startDate || Date.now();
       var input = e.inputBuffer.getChannelData(0);
       var bufferData = new Float32Array(this.bufferSize);
       for (var i = 0; i < this.bufferSize; i++) bufferData[i] = input[i];
@@ -93,7 +95,7 @@ export default {
       // 描画
       this.drawSpectrums(spectrums)
       this.score += this.culcSocre(spectrums)
-      if(this.t++ > 100) this.endRecording()
+      if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
     },
 
     endRecording(){
@@ -102,7 +104,7 @@ export default {
     },
 
     clear(){
-      this.t = 0, this.score = 0, this.preSpectrums = [];
+      this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
       this.clearCanvas();
     },
 
@@ -148,7 +150,14 @@ export default {
 
     addLogs(){
       this.logs.unshift(this.score);
+      if (this.logs.length > 5) this.logs.pop()
     }
   },
+
+  computed: {
+    timer: function() {
+      return this.time > 0 ? this.time / 1000 : 0;
+    }
+  }
 };
 </script>
