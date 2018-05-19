@@ -55,7 +55,7 @@ export default {
       preSpectrums: [], audioContext: null,
       time: 3000, score: 0, margin: 10, startDate: false,
       size: {
-        width: 500, height: 250,
+        width: 500, height: 200,
       },
       chartData: {labels: [],
                   datasets: [{ label: "hoge", backgroundColor: "#f87979", data: []}]},
@@ -126,6 +126,7 @@ export default {
     clear(){
       console.log(this.score)
       this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
+      this.idx = 0, this.socre_list = []
       this.clearCanvas();
     },
 
