@@ -8,16 +8,17 @@
       return {
         datacollection: {
         //Data to be represented on x-axis
-          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], 
+          // labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], 
+          labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
           datasets: [
             {
-              label: 'Data One',
-              backgroundColor: '#f87979',
-              pointBackgroundColor: 'white',
-              borderWidth: 1,
-              pointBorderColor: '#249EBF',
-              //Data to be represented on y-axis
-              data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100]
+              label: 'apples',
+              data: [12, 19, 3, 17, 6, 3, 7],
+              backgroundColor: "rgba(153,255,51,0.4)"
+            }, {
+              label: 'oranges',
+              data: [2, 29, 5, 5, 2, 3, 10],
+              backgroundColor: "rgba(255,153,0,0.4)"
             }
           ]
         },
@@ -26,7 +27,11 @@
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                // callback: function(value) {return ((value % 10) == 0)? value : ''},
+                // min: 0,
+                // max: 30,
+                // stepSize: 1
               },
               gridLines: {
                 display: true

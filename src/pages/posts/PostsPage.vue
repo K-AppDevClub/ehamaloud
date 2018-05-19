@@ -22,37 +22,40 @@
     <canvas width="80" height="45" id="myChart"></canvas>
   </div> -->
   <div class="contents">
-    <canvas width="80" height="45" id="myChart2"></canvas>
+    <!-- <canvas width="80" height="45" id="myChart2"></canvas> -->
+    <my-chart></my-chart>
   </div>
-  <commit-chart></commit-chart>
-  <commit-chart :width="900" :height="300"></commit-chart>
+  <!-- <div class="contents">
+    <commit-chart></commit-chart>
+  </div> -->
+  <!-- <commit-chart :width="900" :height="300"></commit-chart> -->
   <!-- <form></form> -->
 </v-ons-page>
 </template>
 
 <script>
 import Navbar from '../../components/navbar/Navbar';
-// import Form from '../../components/form/Form'
-import CommitChart from '../../components/chart/CommitChart'
+import MyChart from '../../components/chart/MyChart';
+import CommitChart from '../../components/chart/CommitChart';
 
-window.onload = function(){
-  var ctx = document.getElementById('myChart2').getContext('2d');
-  var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-      datasets: [{
-        label: 'apples',
-        data: [12, 19, 3, 17, 6, 3, 7],
-        backgroundColor: "rgba(153,255,51,0.4)"
-      }, {
-        label: 'oranges',
-        data: [2, 29, 5, 5, 2, 3, 10],
-        backgroundColor: "rgba(255,153,0,0.4)"
-      }]
-    }
-  });
-};
+// window.onload = function(){
+//   var ctx = document.getElementById('myChart2').getContext('2d');
+//   var myChart = new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//       labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+//       datasets: [{
+//         label: 'apples',
+//         data: [12, 19, 3, 17, 6, 3, 7],
+//         backgroundColor: "rgba(153,255,51,0.4)"
+//       }, {
+//         label: 'oranges',
+//         data: [2, 29, 5, 5, 2, 3, 10],
+//         backgroundColor: "rgba(255,153,0,0.4)"
+//       }]
+//     }
+//   });
+// };
 
 // window.onload = function(){
 //   var ctx = document.getElementById("myChart").getContext('2d');
@@ -98,7 +101,7 @@ export default {
   name: 'posts-page',
   components: {
     Navbar,
-    // Form,
+    MyChart,
     CommitChart,
   },
   methods: {}
