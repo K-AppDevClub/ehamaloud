@@ -14,6 +14,7 @@
     <el-button type="primary" @click="startRecording()">開始</el-button>
     <el-button type="primary" @click="postScore()">送信</el-button>
     <el-button type="primary" @click="clear()">クリア</el-button>
+    <el-button type="primary" @click="$router.push({ name: 'ranking' });"></el-button>
     
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
@@ -27,6 +28,8 @@
 <script>
 import LoadingIndicator from '../../components/loading-indicator/LoadingIndicator';
 import Navbar from '../../components/navbar/Navbar';
+import Ranking from '../ranking/Ranking';
+
 var src="https://code.jquery.com/jquery-3.2.1.js"
 var src="voice_analyse.js"
 function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
@@ -40,6 +43,7 @@ export default {
   components: {
     LoadingIndicator,
     Navbar,
+    Ranking,
   },
 
 
@@ -48,7 +52,7 @@ export default {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
       score: {  
           score: '',
-          user_name: "ehama"
+          user_name: "NoName"
       },
       preSpectrums: [], audioContext: null,
       time: 3000, score: 0, margin: 10, startDate: false,
@@ -56,6 +60,7 @@ export default {
         width: 500, height: 500,
       },
       logs: [],
+      // routeName: Ranking,
     }
   },
 
@@ -108,7 +113,6 @@ export default {
       this.recordingFlg = false;
       this.audioContext.close().then(this.addLogs);
     },
-
     clear(){
       console.log(this.score)
       this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
@@ -158,20 +162,26 @@ export default {
     addLogs(){
       this.logs.unshift(this.score);
       if (this.logs.length > 5) this.logs.pop()
+      this.postScore();
+      this.goTo('ranking');
     },
     postScore(){
       this.axios.post('http://k-appdev.com:3001/scores', {
         score: {  
           score: this.score,
-          user_name: "ehama"
+          user_name: "NoName"
         }
       })
       .then(res => {
-        console.log(res)
-        console.log(this.score.score)
-        this.$ons.notification.alert('スコアを送信しました');
+        //console.log(res)
+        //console.log(this.score.score)
+        //this.$ons.notification.alert('スコアを送信しました');
       });
-    }
+    },
+    goTo(routeName) {
+      this.$router.push({ name: routeName });
+      //store.commit('toggleMenu', false);
+    },
   },
 
   computed: {
