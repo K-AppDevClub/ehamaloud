@@ -54,7 +54,7 @@ export default {
       size: {
         width: 500, height: 500,
       },
-      logs: [],
+      logs: [], socre_list: [], idx: 0,
     }
   },
 
@@ -99,11 +99,12 @@ export default {
 
       // 描画
       this.drawSpectrums(spectrums)
-      this.score += this.culcSocre(spectrums)
+      this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums))
       if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
     },
 
     endRecording(){
+      console.log(this.socre_list)
       this.recordingFlg = false;
       this.audioContext.close().then(this.addLogs);
     },
