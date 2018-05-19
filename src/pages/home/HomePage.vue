@@ -14,6 +14,10 @@
     <button @click="clear()">クリア</button>
     <hr>
     <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
+    <v-ons-list>
+      <v-ons-list-header>過去ログ</v-ons-list-header>
+      <v-ons-list-item v-for='log in logs' :v-bind='log' v-bind:key='log.id'> {{ log }} </v-ons-list-item>
+    </v-ons-list>
   </v-ons-page>
 </template>
 
@@ -38,11 +42,12 @@ export default {
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
-      preSpectrums: [], audioContext: new AudioContext(),
+      preSpectrums: [], audioContext: null,
       t: 0, score: 0, margin: 10,
       size: {
         width: 500, height: 500,
       },
+      logs: [],
     }
   },
 
@@ -53,7 +58,8 @@ export default {
 
   methods: {
     startRecording() {
-      this.clear()
+      this.clear();
+      this.audioContext =  new AudioContext();
       this.recordingFlg = true;
       navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) });
     },
@@ -82,6 +88,8 @@ export default {
       // 波形を解析
       var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       this.audioAnalyser.getByteFrequencyData(spectrums);
+
+      // 描画
       this.drawSpectrums(spectrums)
       this.score += this.culcSocre(spectrums)
       if(this.t++ > 100) this.endRecording()
@@ -89,6 +97,7 @@ export default {
 
     endRecording(){
       this.recordingFlg = false;
+      this.audioContext.close().then(this.addLogs);
     },
 
     clear(){
@@ -102,11 +111,11 @@ export default {
     },
 
     drawSpectrums(spectrums){
-      var [margin, width, height] = this.getSize();
+      var [margin, w, h] = this.getSize();
       this.clearCanvas();
       this.ctx.beginPath();
       each(spectrums, (spe, i, len=spectrums.length) => { 
-        var x = (i / len) * width + 10, y = (1 - (spe / 255)) * height;
+        var x = (i / len) * w + margin, y = (1 - (spe / 255)) * h;
         if (i === 0) this.ctx.moveTo(x, y);
         else         this.ctx.lineTo(x, y);
       });
@@ -114,16 +123,16 @@ export default {
     },
     
     clearCanvas(){
-      var [margin, w, h] = this.getSize();
+      var [_, w, h] = this.getSize(); // _, width, height
       this.ctx.clearRect(0, 0, w, h);
       this.drawFrame()
     },
     
     drawFrame(){
-      var [margin, w, h] = this.getSize();
-      for(var i in [0,1]){
-        this.ctx.fillRect(margin,     h*i, w, 1);
-        this.ctx.fillRect(w*i+margin, 0,   1, h);
+      var [m, w, h] = this.getSize(); // margin, width, height
+      for(var i in [0, 1]){
+        this.ctx.fillRect(m,     h*i, w, 1);
+        this.ctx.fillRect(w*i+m, 0,   1, h);
       };
     },
 
@@ -136,6 +145,9 @@ export default {
       return current_score;
     },
 
+    addLogs(){
+      this.logs.unshift(this.score);
+    }
   },
 };
 </script>
