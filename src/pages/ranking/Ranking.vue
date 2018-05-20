@@ -1,8 +1,9 @@
 <template>
   <ons-page>
-    <navbar msg="World Ranking!!"></navbar>
+    <navbar navType='brank' msg="Result"></navbar>
       <ons-card>
-        <h1>Result</h1>
+        <h1 v-if="rank"></h1>
+        <h1 v-else>Ranking</h1>
         <h2 v-if="rank"> Ranking: {{rank+1}}  </h2>
         <h2 v-else></h2>
         <h2 v-if="rank">Score: {{scores[rank].score}} </h2>
@@ -11,6 +12,8 @@
       <div style="text-align:right">
         <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
       </div>
+      <twitter v-if="rank" v-bind:score = scores[rank].score></twitter>
+      <twitter v-else></twitter>
       <v-ons-list style="margin-top:10px" class="ranklist">
         <v-ons-list-item >
           <table cellpadding="5">
@@ -33,6 +36,7 @@
 <script>
 import Navbar from '../../components/navbar/Navbar';
 import EhamaForm from '../../components/form/Form';
+import Twitter from '../../components/twitter/Twitter';
 
 
 export default {
@@ -40,6 +44,7 @@ export default {
   components: {
     Navbar,
     EhamaForm,
+    Twitter
   },
   params: {
     checkid: {
@@ -93,7 +98,7 @@ export default {
         if(this.scores[i].id==this.paramsid) {
           this.rank = i;
           //this.alartpop();//check用
-          if(this.rank<10){
+          if(this.rank<20){
             this.alartpop();
           }
           //console.log("check");
@@ -112,7 +117,7 @@ export default {
     },
     alartpop(){
         this.$ons.notification.prompt({
-          message: "best10に入りました！名前を入れてください",
+          message: "best20に入りました！名前を入れてください",
           callback: (user) => {
             this.registname(user)
           },

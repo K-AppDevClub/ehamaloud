@@ -42,7 +42,7 @@
 </style>
 <template>
   <v-ons-page>
-    <navbar></navbar>
+    <navbar navType='brank'></navbar>
     <audio v-bind:src="audioSrc" v-play="shuoldPlay"></audio>
     <div class="container-score">
       <v-ons-card>

@@ -21,6 +21,7 @@ export default {
 		},
 	},
 	mounted() {
+		console.log(this.score)
 		var target = document.getElementById("link");
 		target.href = `https://twitter.com/intent/tweet?original_referer='元ページのURL'&text=ehama-loudのスコア : ${this.score}点!!&tw_p=tweetbutton&url=https://ja.onsen.io/`;
 	},
