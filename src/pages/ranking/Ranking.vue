@@ -1,20 +1,35 @@
+<style lang='scss' scoped>
+.flex-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  // justify-content: space-around;
+}
+.action-btn {
+  margin: 0 10px;
+}
+</style>
 <template>
   <ons-page>
     <navbar navType='brank' msg="Result"></navbar>
-      <ons-card>
-        <h1 v-if="rank"></h1>
-        <h1 v-else>Ranking</h1>
-        <h2 v-if="rank"> Ranking: {{rank+1}}  </h2>
-        <h2 v-else></h2>
-        <h2 v-if="rank">Score: {{scores[rank].score}} </h2>
-        <h3 v-else></h3>
-      </ons-card>
-      <div style="text-align:right">
-        <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
+      <div v-if="rank">
+        <ons-card>
+          <h2> Ranking: {{rank+1}}  </h2>
+          <h2>Score: {{scores[rank].score}} </h2>
+        </ons-card>
       </div>
-      <twitter v-if="rank" v-bind:score = scores[rank].score></twitter>
-      <twitter v-else></twitter>
-      <v-ons-list style="margin-top:10px" class="ranklist">
+      <div v-else></div>
+      <div class="flex-container">
+        <div class="action-btn">
+          <twitter v-if="rank" v-bind:score = scores[rank].score></twitter>
+          <twitter v-else></twitter>
+        </div>
+        <div class="action-btn">
+          <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
+        </div>
+      </div>
+      <v-ons-list style="margin-top:20px" class="ranklist">
+        <v-ons-list-header>World Ranking</v-ons-list-header>
         <v-ons-list-item >
           <table cellpadding="5">
             <tr>
