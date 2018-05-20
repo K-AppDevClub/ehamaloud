@@ -11,7 +11,9 @@
     <navbar></navbar>
     <h3>{{ rounded_score }}</h3>
     <h3>{{ timer }}秒</h3>
+    <audio v-bind:src="audioSrc" v-play="shuoldPlay"></audio>
     <el-button type="primary" @click="startRecording()">開始</el-button>
+    <el-button type="primary" @click="playAudio()">再生</el-button>
     <!-- <el-button type="primary" @click="postScore()">送信</el-button> -->
     <!-- <el-button type="primary" @click="clear()">クリア</el-button> -->
     <el-button type="primary" @click="$router.push({ name: 'ranking' });">ランキングへ</el-button>
@@ -47,20 +49,13 @@ export default {
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
-      score: {  
-          score: '',
-          user_name: "NoName"
-      },
-      preSpectrums: [], audioContext: null,
+      mediaRecoder: null, download: null, mediaStream: null, downloadURL: "", downloadhref: "",
+      audioSrc: "", shuoldPlay: false,
+      score: { score: '', user_name: "NoName" },
+      preSpectrums: [], audioContext: null, chunks: [],
       time: 3000, score: 0, margin: 10, startDate: false,
-      size: {
-        width: 500, height: 200,
-      },
-      logs: [],
-      // routeName: Ranking,
-      chartData: {labels: [],
-                  datasets: [{ label: "hoge", backgroundColor: "#f87979", data: []}]},
-      logs: [], socre_list: [], idx: 0,
+      size: { width: 500, height: 200 },
+      chartData: {}, logs: [], socre_list: [], idx: 0,
     }
   },
   mounted: function(){
@@ -72,10 +67,13 @@ export default {
       this.clear();
       this.audioContext =  new AudioContext();
       this.recordingFlg = true;
-      navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) });
+      navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) })
     },
+
     whenGtetUserMedia(stream){
       // 音声取得関連
+
+      this.startMediaRecordinfg(stream)
       var scriptProcessor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
       var mediastreamsource = this.audioContext.createMediaStreamSource(stream);
       mediastreamsource.connect(scriptProcessor);
@@ -86,6 +84,7 @@ export default {
       this.audioAnalyser.fftSize = 2048;
       mediastreamsource.connect(this.audioAnalyser);
     },
+
     onAudioProcess(e) {
       if (!this.recordingFlg) return;
       // 音声のバッファを作成
@@ -93,7 +92,6 @@ export default {
       var input = e.inputBuffer.getChannelData(0);
       var bufferData = new Float32Array(this.bufferSize);
       for (var i = 0; i < this.bufferSize; i++) bufferData[i] = input[i];
-    
       // 波形を解析
       var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       this.audioAnalyser.getByteFrequencyData(spectrums);
@@ -110,24 +108,42 @@ export default {
         datasets:[ { label: "hoge", backgroundColor: "#f87979", data: this.socre_list } ]
       }
     },
+
     endRecording(){
-      console.log(this.socre_list)
       this.recordingFlg = false;
-      this.audioContext.close().then(this.addLogs);
-      console.log(this.chartData.datasets[0].data)
+      this.stopMediaRecording()
+      // this.audioContext.close().then(this.addLogs);
     },
+
+    startMediaRecordinfg(stream){
+      this.mediaRecoder = new MediaRecorder(stream);
+      this.mediaRecoder.ondataavailable = (ev)=>{ 
+        this.chunks.push(ev.data); console.log("hoge") 
+        this.audioSrc = URL.createObjectURL(new Blob(this.chunks))
+        //this.downloadURL = "test.wav"
+      };
+      this.mediaRecoder.start();
+    },
+
+    stopMediaRecording(){
+      if (this.mediaRecoder === null) return;
+      this.mediaRecoder.stop();
+      this.mediaRecoder = null;
+    },
+
     clear(){
-      console.log(this.score)
       this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
       this.idx = 0, this.socre_list = []
       this.clearCanvas();
     },
-    getSize(){
+
+    getGraphSize(){
       var margin = this.margin
       return [margin, this.size.width-margin*2, this.size.height-margin*2];
     },
+
     drawSpectrums(spectrums){
-      var [margin, w, h] = this.getSize();
+      var [margin, w, h] = this.getGraphSize();
       this.clearCanvas();
       this.ctx.beginPath();
       each(spectrums, (spe, i, len=spectrums.length) => { 
@@ -139,18 +155,19 @@ export default {
     },
     
     clearCanvas(){
-      var [_, w, h] = this.getSize(); // _, width, height
+      var [_, w, h] = this.getGraphSize(); // _, width, height
       this.ctx.clearRect(0, 0, w, h);
       this.drawFrame()
     },
     
     drawFrame(){
-      var [m, w, h] = this.getSize(); // margin, width, height
+      var [m, w, h] = this.getGraphSize(); // margin, width, height
       for(var i in [0, 1]){
         this.ctx.fillRect(m,     h*i, w, 1);
         this.ctx.fillRect(w*i+m, 0,   1, h);
       };
     },
+
     culcSocre(spectrums){
       var current_score = 0;
       each(spectrums, (s,i)=>{
@@ -159,12 +176,7 @@ export default {
       this.preSpectrums = spectrums;
       return current_score;
     },
-    addLogs(){
-      this.logs.unshift(this.rounded_score);
-      if (this.logs.length > 5) this.logs.pop()
-      this.postScore();
-      //this.goTo('ranking');
-    },
+
     postScore(){
       this.axios.post('http://k-appdev.com:3001/scores', {
         score: {  
@@ -182,14 +194,22 @@ export default {
       this.$router.push({ name: routeName });
       //store.commit('toggleMenu', false);
     },
+    playAudio(){
+      this.shuoldPlay = !(this.shuoldPlay)
+    }
   },
   computed: {
-    timer: function() {
-      return this.time > 0 ? this.time / 1000 : 0;
-    },
-    rounded_score: function() {
-      return Math.round(this.score)
-    },
+    timer: function() { return this.time > 0 ? this.time / 1000 : 0; },
+    rounded_score: function(){return Math.round(this.score) },
+  },
+  directives: {
+    play: function (el, binding) {
+      if(binding.value){
+        el.play().then();
+      }else{
+        el.pause();
+      }
+    }
   }
 };
 </script>
