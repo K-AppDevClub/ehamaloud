@@ -57,10 +57,10 @@
       <div class="chrt">
         <chart :chartData="chartData" :width="500" :height="200"></chart>
       </div>
-      <div class="timer">
-        <h3>{{ timer }}秒</h3>
-      </div>
     </v-ons-card>
+    <div class="timer">
+      <h3>{{ timer }}秒</h3>
+    </div>
     <div class="container-buttons">
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
@@ -175,7 +175,7 @@ export default {
     },
 
     clear(){
-      this.idx = 0, this.socre_list = [],//Array.apply(null, Array(132)).map(function () {return 0 })
+      this.idx = 0, this.socre_list = Array.apply(null, Array(132)).map(function () {return 0 })
       this.chunks = [], this.shuoldPlay = false
       this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
       this.createChartData(),
