@@ -31,14 +31,14 @@
   margin: 1em auto 2em;
   text-align: center;
 }
-.timer {
-  text-align: center;
-  margin: 0 auto;
-  width: 20%;
-  padding: 8px 15px;
-  background: #F0BF32;
-  border-radius: 20px;
-}
+// .timer {
+//   text-align: center;
+//   margin: 0 auto;
+//   width: 20%;
+//   padding: 8px 15px;
+//   background: #F0BF32;
+//   border-radius: 20px;
+// }
 </style>
 <template>
   <v-ons-page>
@@ -56,11 +56,11 @@
     <v-ons-card>
       <div class="chrt">
         <chart :chartData="chartData" :width="500" :height="200"></chart>
+        <h3>{{ timer }}秒</h3>
       </div>
     </v-ons-card>
-    <div class="timer">
-      <h3>{{ timer }}秒</h3>
-    </div>
+    <!-- <div class="timer"> -->
+    <!-- </div> -->
     <div class="container-buttons">
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
