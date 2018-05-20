@@ -1,19 +1,32 @@
 <template>
   <ons-page>
-    <navbar></navbar>
-    <h1> ランキング♥ </h1>
-    <!-- <el-button type="primary" @click="checkid()">クリア</el-button> -->
-    <h1> あなたは 何 位でした </h1>
-    <v-ons-list>
-          <v-ons-list-item v-for="score in scores.slice(0,10)" v-bind:key="score.id">
-            <table cellpadding="5">
-              <tr>
-                <td>{{ score.user_name}}</td> 
-                <td>{{ score.score }}</td>
-              </tr>
-            </table>
-          </v-ons-list-item>
-        </v-ons-list>
+    <navbar msg="World Ranking!!"></navbar>
+      <ons-card>
+        <h1>Result</h1>
+        <h2 v-if="rank"> Ranking: {{rank+1}}  </h2>
+        <h2 v-else></h2>
+        <h2 v-if="rank">Score: {{scores[rank].score}} </h2>
+        <h3 v-else></h3>
+      </ons-card>
+      <div style="text-align:right">
+        <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
+      </div>
+      <v-ons-list style="margin-top:10px" class="ranklist">
+        <v-ons-list-item >
+          <table cellpadding="5">
+            <tr>
+              <th style="width:5%">rank</th>
+              <th style="width:75%">name</th>
+              <th style="width:20%">score</th>
+            </tr>
+            <tr v-for="(score,index) in scores.slice(0,20)" v-bind:key="score.id">
+              <th style="text-align:center">{{ index+1 }}</th>
+              <td>{{ score.user_name}}</td> 
+              <td>{{ score.score }}</td>
+            </tr>
+          </table>
+        </v-ons-list-item>
+      </v-ons-list>
   </ons-page>
 </template>
 
@@ -28,15 +41,24 @@ export default {
     Navbar,
     EhamaForm,
   },
+  params: {
+    checkid: {
+      default: null,
+    },
+  },
   data(){
       return{
+        index:'',
         geturl: `http://k-appdev.com:3001/scores`,
-        posturl: `http://k-appdev.com:3001/scores/${this.scoreid}`,
+        patchurl: `http://k-appdev.com:3001/scores/${this.$route.params.checkid}`,
         scores: [],
-        user: '',
-        makeuser: '',
-        cangeid: 100,//新しいid
-        scoreid: 9,//db番号
+        user: '',//popup用ユーザー名
+        makeuser: '',//追加するユーザー名
+        userscore:'',//表示用スコア
+        paramsid: null,//paramid
+        datanum: 0,
+        //useid: 2,
+        rank: null,//ランキング
       }
   },
 
@@ -44,13 +66,16 @@ export default {
     this.axios.get(this.geturl)
     .then((res) => {
       this.scores = res.data;
-      this.scoreid = res.data.length;//新しいid 
-      //console.log(res.data.length);//新しいid
-      console.log(this.scores);//新しいid
+      //this.useid =this.checkid; 
+      //this.scoreid = res.data.length;//dataの長さ
+      this.datanum=res.data.length;//新しいid
+      //console.log(this.scores);//新しいid
       
-      //this.checkid();
+      console.log(this.$route.params.checkid);
+      this.paramsid = this.$route.params.checkid 
       //this.postScore();
-      //console.log(this.user);
+      console.log(this.paramsid);
+      this.checkrank();
       //console.log(this.scores);
       //this.alartpop();
       //this.$ons.notification.prompt('best10に入りました！名前を入れてください',this.user_name);
@@ -63,13 +88,16 @@ export default {
 
   },
   methods: {
-    checkid(){
-      for(var i=0; i<10;i++){
-        if(this.scores[i].id==this.scoreid) {
-          this.changeid = i;
-          this.alartpop();
+    checkrank(){
+      for(var i=0; i<this.datanum;i++){
+        if(this.scores[i].id==this.paramsid) {
+          this.rank = i;
+          //this.alartpop();//check用
+          if(this.rank<10){
+            this.alartpop();
+          }
           //console.log("check");
-          //console.log(this.changeid);
+          console.log(this.rank);
 				}
       }
       
@@ -92,10 +120,10 @@ export default {
     },
     postScore(){
       //console.log(this.scores[this.changeid].score)
-      console.log(this.user);
-      this.axios.post(this.geturl, {
+      console.log(this.paramsid);
+      this.axios.patch(this.patchurl, {
         score: {
-          score: this.scores[this.changeid].score,
+          score: this.scores[this.rank].score,
           user_name: this.makeuser
         }
       })
@@ -104,8 +132,18 @@ export default {
         //console.log(this.score.score)
         //this.$ons.notification.alert('スコアを送信しました');
       });
+      this.scores[this.rank].user_name = this.makeuser 
     },
 
   }
 };
 </script>
+<style>
+  .ranklist{
+    width:100%
+  }
+  .retry{
+   margin: auto;
+   
+  }
+</style>

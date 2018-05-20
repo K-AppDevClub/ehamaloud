@@ -76,19 +76,29 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
+
 var src="https://code.jquery.com/jquery-3.2.1.js"
 var src="voice_analyse.js"
 function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
+
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
 export default {
   name: 'posts-page',
+
   components: {
     LoadingIndicator,
     Navbar,
     Ranking,
     Chart,
   },
+  params: {
+    checkid: {
+      default: 1,
+    },
+  },
+
   data (){
     return {
       ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
@@ -101,10 +111,13 @@ export default {
       chartData: {}, socre_list: [], idx: 0,
     }
   },
+
   mounted: function(){
     this.ctx = this.$refs.scope.getContext('2d');
     this.clear();
+    console.log(this.$router)
   },
+
   methods: {
     startRecording() {
       this.clear();
@@ -121,6 +134,7 @@ export default {
       mediastreamsource.connect(scriptProcessor);
       scriptProcessor.onaudioprocess = this.onAudioProcess;
       scriptProcessor.connect(this.audioContext.destination);
+
       // 音声解析関連
       this.audioAnalyser = this.audioContext.createAnalyser();
       this.audioAnalyser.fftSize = 2048;
@@ -137,6 +151,7 @@ export default {
       // 波形を解析
       var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
       this.audioAnalyser.getByteFrequencyData(spectrums);
+
       // 描画
       this.drawSpectrums(spectrums)
       this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
@@ -228,25 +243,39 @@ export default {
       return (this.shuoldPlay = !(this.shuoldPlay))
     },
 
+    goTo(routeName,id){
+        this.$router.push({ name: 'ranking' , params:{checkid: id}});
+      //console.log (this.id);
+    },
+    goOnly(){
+      this.$router.push({ name: 'ranking' }); 
+    },
+
     postScore(){
-      console.log(this.audio)
-      var params = new FormData()
-      params.append("score[score]", this.rounded_score)
-      params.append("score[user_name]", "ehama")
-      params.append("score[voice_attributes[data]]", this.audio)
-      console.log(params)
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
-      this.axios.post('http://k-appdev.com:3001/scores', params , config)
-      .then(res => {
-        console.log(res)
-        //console.log(this.score.score)
-        //this.$ons.notification.alert('スコアを送信しました');
-      }).catch(res => {console.log(res)});
+      if(this.rounded_score!=0){
+        console.log(this.audio)
+        var params = new FormData()
+        params.append("score[score]", this.rounded_score)
+        params.append("score[user_name]", "ehama")
+        params.append("score[voice_attributes[data]]", this.audio)
+        console.log(params)
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
+        this.axios.post('http://k-appdev.com:3001/scores', params , config)
+        .then(res => {
+          console.log(res)
+          //console.log(this.score.score)
+          //this.$ons.notification.alert('スコアを送信しました');
+          console.log(res.data.id)
+          this.checkid = res.data.id 
+          console.log(this.checkid)
+          this.goTo('ranking',this.checkid)
+        }).catch(res => {console.log(res)});
+      }else{
+        this.goOnly();
+      }
+      
     },
-    goTo(routeName) {
-      this.$router.push({ name: routeName });
-      //store.commit('toggleMenu', false);
-    },
+    
   },
   
   computed: {
