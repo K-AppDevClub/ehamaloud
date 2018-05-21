@@ -19,11 +19,7 @@
   width:90%;
 }
 .flex-container {
-  // width: 20%;
   display: inline-flex;
-  // flex-direction: column-reverse;
-  // flex-direction: row;
-  // flex-direction: row-reverse;
   justify-content: space-around;
 }
 .container-buttons {
@@ -31,14 +27,6 @@
   margin: 1em auto 2em;
   text-align: center;
 }
-// .timer {
-//   text-align: center;
-//   margin: 0 auto;
-//   width: 20%;
-//   padding: 8px 15px;
-//   background: #F0BF32;
-//   border-radius: 20px;
-// }
 </style>
 <template>
   <v-ons-page>
@@ -77,16 +65,12 @@ import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
 
-var src="https://code.jquery.com/jquery-3.2.1.js"
-var src="voice_analyse.js"
-function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
-
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
 
 export default {
   name: 'posts-page',
-
   components: {
     LoadingIndicator,
     Navbar,
@@ -98,43 +82,65 @@ export default {
       default: 1,
     },
   },
-
   data (){
     return {
-      ctx: null, audioAnalyser: null, bufferSize: 1024, recordingFlg: false,
-      mediaRecoder: null, audioSrc: "", shuoldPlay: false, audio: null,
-      score: { score: "", user_name: "NoName",
-               voice_attributes: { data: null } },
-      preSpectrums: [], audioContext: null, chunks: [],
-      time: 3000, score: 0, margin: 10, startDate: false,
-      size: { width: 100, height: 50 },
-      chartData: {}, socre_list: [], idx: 0,
+      ctx: null, 
+      audioAnalyser: null, 
+      bufferSize: 1024, 
+      recordingFlg: false,
+      mediaRecoder: null, 
+      audioSrc: "", 
+      shuoldPlay: false, 
+      audio: null,
+      score: { 
+        score: "", 
+        user_name: "NoName",
+        voice_attributes: { 
+          data: null 
+        } 
+      },
+      preSpectrums: [], 
+      audioContext: null, 
+      chunks: [],
+      time: 3000, 
+      score: 0, 
+      margin: 10, 
+      startDate: false,
+      size: { 
+        width: 100, 
+        height: 50 
+      },
+      chartData: {}, 
+      socre_list: [], 
+      idx: 0,
     }
   },
-
-  mounted: function(){
+  mounted(){
     this.ctx = this.$refs.scope.getContext('2d');
     this.clear();
     console.log(this.$router)
   },
-
+  computed: {
+    timer: function() { return this.time > 0 ? this.time / 1000 : 0; },
+    rounded_score: function(){return Math.round(this.score) },
+  },
   methods: {
     startRecording() {
       this.clear();
       this.audioContext =  new AudioContext();
       this.recordingFlg = true;
-      navigator.getUserMedia({audio: true}, this.whenGtetUserMedia, (e) => { console.log(e) })
+      navigator.getUserMedia({audio: true}, this.whenGetUserMedia, (e) => { console.log(e) })
     },
 
-    whenGtetUserMedia(stream){
+    whenGetUserMedia(stream){
       // 音声取得関連
-      this.startMediaRecordinfg(stream)
+      this.startMediaRecording(stream)
+
       var scriptProcessor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
       var mediastreamsource = this.audioContext.createMediaStreamSource(stream);
       mediastreamsource.connect(scriptProcessor);
       scriptProcessor.onaudioprocess = this.onAudioProcess;
       scriptProcessor.connect(this.audioContext.destination);
-
       // 音声解析関連
       this.audioAnalyser = this.audioContext.createAnalyser();
       this.audioAnalyser.fftSize = 2048;
@@ -161,7 +167,7 @@ export default {
     
     createChartData (){
       this.chartData = {
-        labels: [...Array(this.socre_list.length).keys()],
+        labels: [...this.socre_list.keys()],
         datasets:[ { label: "スコアの推移", backgroundColor: "#f87979", data: this.socre_list } ]
       }
     },
@@ -172,7 +178,7 @@ export default {
       this.audioContext.close();
     },
 
-    startMediaRecordinfg(stream){
+    startMediaRecording(stream){
       this.mediaRecoder = new MediaRecorder(stream);
       this.mediaRecoder.ondataavailable = (ev)=>{ 
         this.chunks.push(ev.data); 
@@ -190,10 +196,15 @@ export default {
     },
 
     clear(){
-      this.idx = 0, this.socre_list = Array.apply(null, Array(132)).map(function () {return 0 })
-      this.chunks = [], this.shuoldPlay = false
-      this.time = 3000, this.score = 0, this.preSpectrums = [], this.startDate=false;
-      this.createChartData(),
+      this.idx = 0;
+      this.socre_list = Array.apply(null, Array(132)).map(function () {return 0 })
+      this.chunks = []
+      this.shuoldPlay = false
+      this.time = 3000
+      this.score = 0
+      this.preSpectrums = []
+      this.startDate=false;
+      this.createChartData();
       this.clearCanvas();
       this.createChartData();
     },
@@ -242,15 +253,6 @@ export default {
       console.log(this.shuoldPlay)
       return (this.shuoldPlay = !(this.shuoldPlay))
     },
-
-    goTo(routeName,id){
-        this.$router.push({ name: 'ranking' , params:{checkid: id}});
-      //console.log (this.id);
-    },
-    goOnly(){
-      this.$router.push({ name: 'ranking' }); 
-    },
-
     postScore(){
       if(this.rounded_score!=0){
         console.log(this.audio)
@@ -263,26 +265,16 @@ export default {
         this.axios.post('http://k-appdev.com:3001/scores', params , config)
         .then(res => {
           console.log(res)
-          //console.log(this.score.score)
-          //this.$ons.notification.alert('スコアを送信しました');
           console.log(res.data.id)
           this.checkid = res.data.id 
           console.log(this.checkid)
-          this.goTo('ranking',this.checkid)
+          this.$router.push({ name: 'ranking' , params:{checkid: this.checkid}});
         }).catch(res => {console.log(res)});
       }else{
-        this.goOnly();
+        this.$router.push({ name: 'ranking' }); 
       }
-      
     },
-    
   },
-  
-  computed: {
-    timer: function() { return this.time > 0 ? this.time / 1000 : 0; },
-    rounded_score: function(){return Math.round(this.score) },
-  },
-
   directives: {
     play: function (el, binding) {
       if(binding.value) {
@@ -293,8 +285,6 @@ export default {
       }
       else el.pause();
     },
-    
   },
-
 };
 </script>
