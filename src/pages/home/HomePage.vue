@@ -64,6 +64,7 @@ import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
 import Graph from '../../components/draw-spectrum/DrawSpectrum'
+import calcScore from '../../services/CalcScore'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -162,7 +163,8 @@ export default {
 
       // 描画
       this.cur_spectrum = spectrums
-      this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
+      this.score += (this.socre_list[this.idx++] = calcScore.calc(this.preSpectrums, spectrums));
+      this.preSpectrums = spectrums;
       this.createChartData();
       if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
     },
@@ -209,14 +211,6 @@ export default {
       this.createChartData();
     },
 
-    culcSocre(spectrums){
-      var current_score = 0;
-      each(spectrums, (s,i)=>{
-        current_score += Math.pow(s - (this.preSpectrums[i] || 0), 2) / 100;
-      });
-      this.preSpectrums = spectrums;
-      return current_score;
-    },
 
     postScore(){
       if(this.rounded_score!=0){
