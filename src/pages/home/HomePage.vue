@@ -31,7 +31,6 @@
 <template>
   <v-ons-page>
     <navbar navType='brank'></navbar>
-    <audio v-bind:src="audioSrc" v-play="shuoldPlay"></audio>
     <div class="container-score">
       <v-ons-card>
         <div class="score-board">
@@ -52,7 +51,7 @@
     <div class="container-buttons">
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
-        <canvas ref="scope" :width="size.width" :height="size.height"></canvas>
+        <graph :spectrums="cur_spectrum"></graph>
         <v-ons-button style="margin: 6px 0" @click="clear()">クリア</v-ons-button>
       </div>
     </div>
@@ -64,6 +63,8 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
+import Graph from '../../components/draw-spectrum/DrawSpectrum'
+import calcScore from '../../services/CalcScore'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -76,6 +77,7 @@ export default {
     Navbar,
     Ranking,
     Chart,
+    Graph,
   },
   params: {
     checkid: {
@@ -90,7 +92,7 @@ export default {
       recordingFlg: false,
       mediaRecoder: null, 
       audioSrc: "", 
-      shuoldPlay: false, 
+      shuoldPlay: false,
       audio: null,
       score: { 
         score: "", 
@@ -103,7 +105,8 @@ export default {
       audioContext: null, 
       chunks: [],
       time: 3000, 
-      score: 0, 
+      score: 0,
+      cur_spectrum: [],
       margin: 10, 
       startDate: false,
       size: { 
@@ -116,14 +119,14 @@ export default {
     }
   },
   mounted(){
-    this.ctx = this.$refs.scope.getContext('2d');
     this.clear();
-    console.log(this.$router)
   },
+
   computed: {
     timer: function() { return this.time > 0 ? this.time / 1000 : 0; },
     rounded_score: function(){return Math.round(this.score) },
   },
+
   methods: {
     startRecording() {
       this.clear();
@@ -159,8 +162,9 @@ export default {
       this.audioAnalyser.getByteFrequencyData(spectrums);
 
       // 描画
-      this.drawSpectrums(spectrums)
-      this.score += (this.socre_list[this.idx++] = this.culcSocre(spectrums));
+      this.cur_spectrum = spectrums
+      this.score += (this.socre_list[this.idx++] = calcScore.calc(this.preSpectrums, spectrums));
+      this.preSpectrums = spectrums;
       this.createChartData();
       if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
     },
@@ -205,54 +209,9 @@ export default {
       this.preSpectrums = []
       this.startDate=false;
       this.createChartData();
-      this.clearCanvas();
-      this.createChartData();
     },
 
-    getGraphSize(){
-      var margin = this.margin
-      return [margin, this.size.width-margin*2, this.size.height-margin*2];
-    },
 
-    drawSpectrums(spectrums){
-      var [margin, w, h] = this.getGraphSize();
-      this.clearCanvas();
-      this.ctx.beginPath();
-      each(spectrums, (spe, i, len=spectrums.length) => { 
-        var x = (i / len) * w + margin, y = (1 - (spe / 255)) * h + margin;
-        if (i === 0) this.ctx.moveTo(x, y);
-        else         this.ctx.lineTo(x, y);
-      });
-      this.ctx.stroke();
-    },
-    
-    clearCanvas(){
-      var [m, w, h] = this.getGraphSize(); // _, width, height
-      this.ctx.clearRect(0, 0, w+m*2, h+m*2);
-      this.drawFrame()
-    },
-    
-    drawFrame(){
-      var [m, w, h] = this.getGraphSize(); // margin, width, height
-      for(var i in [0, 1]){
-        this.ctx.fillRect(m,     h*i+m, w, 1);
-        this.ctx.fillRect(w*i+m, m,   1, h);
-      };
-    },
-
-    culcSocre(spectrums){
-      var current_score = 0;
-      each(spectrums, (s,i)=>{
-        current_score += Math.pow(s - (this.preSpectrums[i] || 0), 2) / 100;
-      });
-      this.preSpectrums = spectrums;
-      return current_score;
-    },
-
-    playAudio(){
-      console.log(this.shuoldPlay)
-      return (this.shuoldPlay = !(this.shuoldPlay))
-    },
     postScore(){
       if(this.rounded_score!=0){
         console.log(this.audio)
@@ -260,30 +219,15 @@ export default {
         params.append("score[score]", this.rounded_score)
         params.append("score[user_name]", "ehama")
         params.append("score[voice_attributes[data]]", this.audio)
-        console.log(params)
         const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
         this.axios.post('http://k-appdev.com:3001/scores', params , config)
         .then(res => {
-          console.log(res)
-          console.log(res.data.id)
-          this.checkid = res.data.id 
-          console.log(this.checkid)
+          this.checkid = res.data.id
           this.$router.push({ name: 'ranking' , params:{checkid: this.checkid}});
         }).catch(res => {console.log(res)});
       }else{
         this.$router.push({ name: 'ranking' }); 
       }
-    },
-  },
-  directives: {
-    play: function (el, binding) {
-      if(binding.value) {
-        el.play();
-        el.addEventListener("ended", () => {
-          vm.playAudio();
-        }, false);
-      }
-      else el.pause();
     },
   },
 };
