@@ -67,7 +67,7 @@ import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
 
 // クロスブラウザ定義
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+navigator.getUserMedia = navigator.getUserMedia || navigator.device.capture || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
 
 export default {

@@ -9,7 +9,53 @@
   "installed_plugins": {
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.kappdev.ehamadate"
+    },
+    "cordova-plugin-media-capture": {
+      "PACKAGE_NAME": "com.kappdev.ehamadate"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-dialogs": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-battery-status": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.kappdev.ehamadate"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-media": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-screen-orientation": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-vibration": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    },
+    "cordova-plugin-device-motion": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
     }
   },
-  "dependent_plugins": {}
+  "dependent_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "com.kappdev.ehamaLoud"
+    }
+  }
 }
