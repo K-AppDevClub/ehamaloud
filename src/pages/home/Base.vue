@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import HomePage from './HomePage';
+import MainMenu from './MainMenu';
+// import HomePage from './HomePage';
 import Navbar from '../../components/navbar/Navbar';
 
 export default {
@@ -17,7 +18,7 @@ export default {
   },
   data() {
     return {
-      pageStack: [HomePage]
+      pageStack: [MainMenu]
     }
   },
 };
