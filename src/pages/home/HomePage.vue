@@ -32,26 +32,26 @@
   <v-ons-page>
     <navbar navType='brank'></navbar>
     <div class="container-score">
-      <v-ons-card>
+        <graph :spectrums="cur_spectrum"></graph>
+      <!-- <v-ons-card>
         <div class="score-board">
           {{ rounded_score }}
         </div>
-      </v-ons-card>
-      <v-ons-button type="primary" @click="postScore()">送信</v-ons-button>
+      </v-ons-card> -->
+      <!-- <v-ons-button type="primary" @click="postScore()">送信</v-ons-button> -->
     </div>
     <hr>
-    <v-ons-card>
+    <!-- <v-ons-card>
       <div class="chrt">
         <chart :chartData="chartData" :width="500" :height="200"></chart>
         <h3>{{ timer }}秒</h3>
       </div>
-    </v-ons-card>
+    </v-ons-card> -->
     <!-- <div class="timer"> -->
     <!-- </div> -->
     <div class="container-buttons">
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
-        <graph :spectrums="cur_spectrum"></graph>
         <v-ons-button style="margin: 6px 0" @click="clear()">クリア</v-ons-button>
       </div>
     </div>

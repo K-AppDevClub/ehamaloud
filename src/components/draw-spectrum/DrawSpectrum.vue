@@ -12,12 +12,13 @@ export default{
   data() {
     return {
       ctx: null, margin: 10,
-      size: { margin:10, width: 100, height: 50 }
+      size: { margin:10, width: document.documentElement.clientWidth, height: document.documentElement.clientHeight-200 }
     }
   },
 
   mounted() {
     this.ctx = this.$refs.scope.getContext('2d');
+    this.ctx.strokeStyle = 'rgb(0,255,0)';
     console.log(this.spectrums)
   },
 
@@ -26,8 +27,10 @@ export default{
       var [margin, w, h] = this.getGraphSize();
       this.clearCanvas();
       this.ctx.beginPath();
+      this.ctx.fillStyle = 'rgb(0,0,0)'
+      this.ctx.fillRect(0, 0, w, h+margin*2);
       each(spectrums, (spe, i, len=spectrums.length) => { 
-        var x = (i / len) * w + margin, y = (1 - (spe / 255)) * h + margin;
+        var x = (i / len) * w, y = (1 - (spe / 255)) * h + margin;
         if (i === 0) this.ctx.moveTo(x, y);
         else         this.ctx.lineTo(x, y);
       });
@@ -38,13 +41,13 @@ export default{
   methods: {
     getGraphSize(){
       var margin = this.margin
-      return [margin, this.size.width-margin*2, this.size.height-margin*2];
+      return [margin, this.size.width, this.size.height-margin*2];
     },
 
     clearCanvas(){
       var [m, w, h] = this.getGraphSize(); // _, width, height
       this.ctx.clearRect(0, 0, w+m*2, h+m*2);
-      this.drawFrame()
+      // this.drawFrame()
     },
     
     drawFrame(){
@@ -58,3 +61,7 @@ export default{
 }
 
 </script>
+
+</<style>
+
+</style>

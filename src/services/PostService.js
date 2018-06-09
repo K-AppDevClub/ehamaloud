@@ -10,7 +10,9 @@ export default {
       apikey: 'pecUAOmUgV8vOCyIAtrMn5OH45fIg15q',
       predict: 1,
     }))
+
     .then(response => response.data)
     .catch(err => console.log(err));
+    
   },
 };
