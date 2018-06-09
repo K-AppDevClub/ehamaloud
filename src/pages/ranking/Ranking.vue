@@ -73,14 +73,12 @@
 
 <script>
 import Navbar from '../../components/navbar/Navbar';
-import EhamaForm from '../../components/form/Form';
 import Twitter from '../../components/twitter/Twitter';
 
 export default {
   name: 'ranking',
   components: {
     Navbar,
-    EhamaForm,
     Twitter
   },
   params: {

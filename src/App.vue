@@ -36,9 +36,9 @@ navbar {
 <template>
 <v-ons-page id="app">
   <v-ons-splitter>
-    <v-ons-splitter-side swipeable collapse width="250px" :animation="$ons.platform.isAndroid() ? 'overlay' : 'reveal'" :open.sync="menuIsOpen" @update:open="onUserInteraction">
+    <!-- <v-ons-splitter-side swipeable collapse width="250px" :animation="$ons.platform.isAndroid() ? 'overlay' : 'reveal'" :open.sync="menuIsOpen" @update:open="onUserInteraction">
       <side-menu></side-menu>
-    </v-ons-splitter-side>
+    </v-ons-splitter-side> -->
 
     <v-ons-splitter-content>
       <transition name="slide-fade">
