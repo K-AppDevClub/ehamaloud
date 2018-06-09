@@ -32,27 +32,12 @@
   <v-ons-page>
     <navbar navType='brank'></navbar>
     <div class="container-score">
-        <graph :spectrums="cur_spectrum"></graph>
-      <!-- <v-ons-card>
-        <div class="score-board">
-          {{ rounded_score }}
-        </div>
-      </v-ons-card> -->
-      <!-- <v-ons-button type="primary" @click="postScore()">送信</v-ons-button> -->
+      <graph :spectrums="cur_spectrum"></graph>
     </div>
-    <hr>
-    <!-- <v-ons-card>
-      <div class="chrt">
-        <chart :chartData="chartData" :width="500" :height="200"></chart>
-        <h3>{{ timer }}秒</h3>
-      </div>
-    </v-ons-card> -->
-    <!-- <div class="timer"> -->
-    <!-- </div> -->
     <div class="container-buttons">
+    <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
-        <v-ons-button style="margin: 6px 0" @click="clear()">クリア</v-ons-button>
       </div>
     </div>
   </v-ons-page>
@@ -104,7 +89,7 @@ export default {
       preSpectrums: [], 
       audioContext: null, 
       chunks: [],
-      time: 3000, 
+      time: 0, 
       score: 0,
       cur_spectrum: [],
       margin: 10, 
@@ -165,8 +150,7 @@ export default {
       this.cur_spectrum = spectrums
       this.score += (this.socre_list[this.idx++] = calcScore.calc(this.preSpectrums, spectrums));
       this.preSpectrums = spectrums;
-      this.createChartData();
-      if ((this.time = 3000 - Date.now() + this.startDate) < 0) this.endRecording();
+      if ((this.time = Date.now() - this.startDate) > 3000) this.endRecording();
     },
     
     createChartData (){
@@ -204,11 +188,10 @@ export default {
       this.socre_list = Array.apply(null, Array(132)).map(function () {return 0 })
       this.chunks = []
       this.shuoldPlay = false
-      this.time = 3000
+      this.time = 0
       this.score = 0
       this.preSpectrums = []
       this.startDate=false;
-      this.createChartData();
     },
 
 

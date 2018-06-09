@@ -11,14 +11,15 @@ export default{
 
   data() {
     return {
-      ctx: null, margin: 10,
-      size: { margin:10, width: document.documentElement.clientWidth, height: document.documentElement.clientHeight-200 }
+      ctx: null, margin: 100,
+      size: { margin:10, width: document.documentElement.clientWidth, height: document.documentElement.clientHeight }
     }
   },
 
   mounted() {
     this.ctx = this.$refs.scope.getContext('2d');
-    this.ctx.strokeStyle = 'rgb(0,255,0)';
+    this.ctx.strokeStyle = 'rgb(51,247,69)';
+    this.ctx.lineWidth = 3
     console.log(this.spectrums)
   },
 
