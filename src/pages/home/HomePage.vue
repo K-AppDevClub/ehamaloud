@@ -33,9 +33,9 @@
     <navbar navType='brank'></navbar>
     <div class="container-score">
       <graph :spectrums="cur_spectrum"></graph>
+      <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
     </div>
     <div class="container-buttons">
-    <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
       <div class="flex-container">
         <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
       </div>
