@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import HomePage from '@/components/HomePage';
+import PlayGame from '@/components/PlayGame';
 
-describe('HomePage.vue', () => {
-  const Constructor = Vue.extend(HomePage);
+describe('PlayGame.vue', () => {
+  const Constructor = Vue.extend(PlayGame);
   const vm = new Constructor().$mount();
 
   it('should render correct contents', () => {

@@ -51,7 +51,7 @@ navbar {
 
 <script>
 import SideMenu from './components/side-menu/SideMenu';
-import HomePage from './pages/home/HomePage';
+import PlayGame from './pages/home/PlayGame';
 import store from './store';
 
 export default {
@@ -59,7 +59,7 @@ export default {
   store,
   data() {
     return {
-      pageStack: [HomePage]
+      pageStack: [PlayGame]
     }
   },
   computed: {

@@ -27,10 +27,27 @@
   margin: 1em auto 2em;
   text-align: center;
 }
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  color: white;
+  cursor: pointer;
+}
 </style>
 <template>
   <v-ons-page>
     <navbar navType='brank'></navbar>
+    <div id="overlay" @click="off()">
+      <p style="text-align: center; font-size:50px">{{ countdown_num }}</p>
+    </div>
     <div class="container-score">
       <graph :spectrums="cur_spectrum"></graph>
       <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
@@ -102,10 +119,22 @@ export default {
       chartData: {}, 
       socre_list: [], 
       idx: 0,
+      countdown_timer: null,
+      countdown_num: 3,
     }
   },
   mounted(){
     this.clear();
+    this.on();
+    this.countdown_timer = setInterval(()=>{
+      this.countdown_num -= 1;
+      if(this.countdown_num<=0){
+        clearInterval(this.countdown_timer);
+        this.off();
+        this.startRecording();
+      }
+      console.log(this.countdown_num);
+    },1000);
   },
 
   computed: {
@@ -114,6 +143,13 @@ export default {
   },
 
   methods: {
+    on() {
+      document.getElementById("overlay").style.display = "block";
+      console.log("hoge");
+    },
+    off() {
+      document.getElementById("overlay").style.display = "none";
+    },
     startRecording() {
       this.clear();
       this.audioContext =  new AudioContext();
