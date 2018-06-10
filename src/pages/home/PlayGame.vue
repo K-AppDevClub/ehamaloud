@@ -185,10 +185,10 @@ export default {
 
       // 描画
       spectrums = spectrums.map(Math.abs).map(Math.log10).map((x)=>{return x*10})
-      spectrums =  fft.util.fftMag(fft.fft(spectrums), 8000)
-      spectrums = calcScore.smoothing(spectrums.slice(32,256))
+      spectrums =  fft.util.fftMag(fft.fft(spectrums), 8192)
+      spectrums = calcScore.smoothing(spectrums.slice(48,256))
       this.cur_spectrum = spectrums
-      this.score += (this.socre_list[this.idx++] = calcScore.calc2(spectrums));
+      this.score += (this.socre_list[this.idx++] = calcScore.calc2(this.preSpectrums, spectrums));
       console.log(this.score)
       this.preSpectrums = spectrums;
       if ((this.time = Date.now() - this.startDate) > 3000) this.endRecording();

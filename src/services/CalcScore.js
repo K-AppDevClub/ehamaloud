@@ -10,14 +10,18 @@ export default{
     return current_score;
   },
 
-  calc2(spectrums){
+  calc2(preSpectrums, spectrums){
     var current_score = 0, minimum_val = spectrums[0];
+    var pre_max_index = preSpectrums.indexOf(Math.max.apply(null, preSpectrums));
+    var max_index = spectrums.indexOf(Math.max.apply(null, spectrums));
+    var k = 1 + Math.abs(pre_max_index - max_index) / 10
+    console.log(k)
     each(spectrums, (s, i)=>{
       current_score += s;
       minimum_val = Math.min(minimum_val, s)
     });
     current_score -= minimum_val * spectrums.length
-    return current_score  > 1000 ? current_score : 0
+    return current_score  > 850 ? current_score * k : 0
   },
 
   smoothing(spectrums, ave_range=30){
