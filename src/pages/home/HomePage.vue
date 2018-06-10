@@ -50,6 +50,7 @@ import Ranking from '../ranking/Ranking';
 import Chart from './chart'
 import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
+import fft from 'fft-js'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.device.capture || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -143,12 +144,16 @@ export default {
       var bufferData = new Float32Array(this.bufferSize);
       for (var i = 0; i < this.bufferSize; i++) bufferData[i] = input[i];
       // 波形を解析
-      var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
-      this.audioAnalyser.getByteFrequencyData(spectrums);
+      var spectrums = new Float32Array(this.audioAnalyser.frequencyBinCount);
+      this.audioAnalyser.getFloatFrequencyData(spectrums);
 
       // 描画
+      spectrums = spectrums.map(Math.abs).map(Math.log10).map((x)=>{return x*10})
+      spectrums =  fft.util.fftMag(fft.fft(spectrums), 8000)
+      spectrums = calcScore.smoothing(spectrums.slice(32,256))
       this.cur_spectrum = spectrums
-      this.score += (this.socre_list[this.idx++] = calcScore.calc(this.preSpectrums, spectrums));
+      this.score += (this.socre_list[this.idx++] = calcScore.calc2(spectrums));
+      console.log(this.score)
       this.preSpectrums = spectrums;
       if ((this.time = Date.now() - this.startDate) > 3000) this.endRecording();
     },
