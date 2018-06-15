@@ -68,6 +68,7 @@ import Chart from './chart'
 import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
 import fft from 'fft-js'
+import { uuid } from 'vue-uuid'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.device.capture || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -119,12 +120,14 @@ export default {
       chartData: {}, 
       socre_list: [], 
       idx: 0,
+      user_id: null,
       countdown_timer: null,
       countdown_num: 3,
     }
   },
   mounted(){
     this.clear();
+    this.user_id = this.getUserID();
     this.on();
     this.countdown_timer = setInterval(()=>{
       this.countdown_num -= 1;
@@ -242,6 +245,7 @@ export default {
         var params = new FormData()
         params.append("score[score]", this.rounded_score)
         params.append("score[user_name]", "ehama")
+        // params.append("score[]")
         params.append("score[voice_attributes[data]]", this.audio)
         const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
         this.axios.post('http://k-appdev.com:3001/scores', params , config)
@@ -253,6 +257,17 @@ export default {
         this.$router.push({ name: 'ranking' }); 
       }
     },
+
+    getUserID(){
+      var userID = null;
+      if((userID=localStorage.getItem("user_id"))==null){ 
+        userID = uuid.v4();
+        localStorage.setItem("user_id", userID)
+      } 
+      console.log(userID)
+      return userID;
+    }
+
   },
 };
 </script>
