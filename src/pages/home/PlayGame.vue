@@ -50,7 +50,8 @@
     </div>
     <div class="container-score">
       <graph :spectrums="cur_spectrum"></graph>
-      <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
+      <!-- <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar> -->
+      <progress-bar :time="time"/>
     </div>
     <div class="container-buttons">
       <div class="flex-container">
@@ -65,6 +66,7 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
+import ProgressBar from '../../components/progress-bar/ProgressBar'
 import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
 import fft from 'fft-js'
@@ -82,6 +84,7 @@ export default {
     Ranking,
     Chart,
     Graph,
+    ProgressBar,
   },
   params: {
     checkid: {
@@ -245,7 +248,7 @@ export default {
         var params = new FormData()
         params.append("score[score]", this.rounded_score)
         params.append("score[user_name]", "ehama")
-        // params.append("score[]")
+        params.append("score[user_id]", this.user_id)
         params.append("score[voice_attributes[data]]", this.audio)
         const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
         this.axios.post('http://k-appdev.com:3001/scores', params , config)
@@ -264,7 +267,6 @@ export default {
         userID = uuid.v4();
         localStorage.setItem("user_id", userID)
       } 
-      console.log(userID)
       return userID;
     }
 
