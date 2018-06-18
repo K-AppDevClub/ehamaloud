@@ -7,7 +7,7 @@
 }
 .container-score {
   text-align: center;
-  margin: 1em auto 1em;
+  margin: 0em auto 0em;
 }
 .score-board {
   text-align: center;
@@ -52,11 +52,6 @@
       <graph :spectrums="cur_spectrum"></graph>
       <!-- <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar> -->
       <progress-bar :time="time"/>
-    </div>
-    <div class="container-buttons">
-      <div class="flex-container">
-        <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
-      </div>
     </div>
   </v-ons-page>
 </template>

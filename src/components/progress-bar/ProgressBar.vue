@@ -27,6 +27,7 @@ export default {
   .bar {
     background: blue;
     width: 50px;
-    height: 50px;
+    height: 40px;
+    margin: 0em 0em 0em 0emz;
   }
 </style>
