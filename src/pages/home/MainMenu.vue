@@ -82,8 +82,8 @@
   <ons-page>
     <div class="mainmenu">
       <div class="title">
-        <h1>○○！！〇〇！！</h1>
-        <h1>○○○○○○！！</h1>
+        <h1>さけんで、わらって</h1>
+        <h1>へんなこえバトル！！</h1>
       </div>
       <div class="menu">
         <table>
