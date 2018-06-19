@@ -9,24 +9,7 @@
   text-align: center;
   margin: 0em auto 0em;
 }
-.score-board {
-  text-align: center;
-  font-size: 1.5em;
-}
-.chrt {
-  text-align: center;
-  margin: 1em auto 0;
-  width:90%;
-}
-.flex-container {
-  display: inline-flex;
-  justify-content: space-around;
-}
-.container-buttons {
-  align-items: baseline;
-  margin: 1em auto 2em;
-  text-align: center;
-}
+
 p {
   font-size: 1.1em;
   line-height: 1.7em;

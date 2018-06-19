@@ -34,7 +34,7 @@
         </div></th>
         <th><div>
           <ons-icon
-            @click="$router.push({ name: 'home'});"
+            @click="$router.push({ name: ''});"
             icon="fa-undo"
             size="25px"
             fixed-width="false"
