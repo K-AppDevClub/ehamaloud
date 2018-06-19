@@ -37,7 +37,7 @@ p {
 <template>
   <v-ons-page>
     <navbar navType='brank'></navbar>
-    <div id="overlay" @click="off()">
+    <div id="overlay">
       <p style="text-align: center;">{{ countdown_num }}</p>
     </div>
     <div class="container-score">

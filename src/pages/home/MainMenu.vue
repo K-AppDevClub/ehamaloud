@@ -14,7 +14,7 @@
   margin: 0 10px;
 }
 
-#overlay {
+#describe {
   position: fixed;
   display: none;
   width: 100%;
@@ -92,15 +92,13 @@
           </tr>
         </table>
       </div>
-      <div id="overlay" @click="off()">
+      <div id="describe" @click="off()">
         <h1 style="text-align: center;">このゲームは？</h1>
         <p>叫びます。変な声出します。点数でます。競いましょう!!</p>
         <p>得点の計算方法は、ちょっとかわっているよ。試行錯誤しながら高得点をめざそう！！
         </p>
       </div>
     </div>
-    <!-- <div id="overlay" @click="off()"><h1>Hay!</h1></div>
-    <button @click="on()">Turn on overlay effect</button> -->
   </ons-page>
 </template>
 
@@ -142,10 +140,10 @@ export default {
     },
 
     on() {
-      document.getElementById("overlay").style.display = "block";
+      document.getElementById("describe").style.display = "block";
     },
     off() {
-      document.getElementById("overlay").style.display = "none";
+      document.getElementById("describe").style.display = "none";
     },
 
     go(path){
