@@ -1,24 +1,48 @@
 <style lang='scss' scoped>
+
 .ranklist{
-  width:100%
+  width:100%;
+  font-size: 1.2em;
+  line-height: 1.2em;
+  letter-spacing: -2px;
+  margin-bottom: 0em;
+
+  .list-header {
+    background-color: orange;
+    h2{
+      color: #fefece;
+      margin-top: 0px;
+      font-size: 1.9em;
+      padding-top: 0.2em;
+      padding-bottom: 0.2em;
+      letter-spacing: 5.5px;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  table{
+    border-collapse: collapse;
+    margin-top: -20px;
+    color: #444;
+    tr{
+      border-bottom: 2px solid;
+      border-color: #eee;
+    }
+    th{
+      font-size:1.3em;
+    }
+  }
+
 }
-.retry{
-  margin: auto;
-}
-.flex-container {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-}
-.action-btn {
-  margin: 0 10px;
-}
+
 </style>
 
 <template>
   <ons-page>
-    <navbar navType='brank' msg="Result"></navbar>
-      <div v-if="rank">
+    <navbar navType='brank' msg="Result" style="margin-bottom: 0px;"></navbar>
+      <score-board :results="results" :voiceID="voiceID"/>
+      <!-- <div v-if="rank">
         <ons-card>
           <h2> Ranking: {{rank+1}}  </h2>
           <h2>Score: {{scores[rank].score}} </h2>
@@ -30,9 +54,9 @@
             style="color: orange">
           </ons-icon>
         </ons-card>
-      </div>
-      <div v-else></div>
-      <div class="flex-container">
+      </div> -->
+      <!-- <div v-else></div> -->
+      <!-- <div class="flex-container">
         <div class="action-btn">
           <twitter v-if="rank" v-bind:score = scores[rank].score></twitter>
           <twitter v-else></twitter>
@@ -40,21 +64,16 @@
         <div class="action-btn">
           <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
         </div>
-      </div>
-      <v-ons-list style="margin-top:20px" class="ranklist">
-        <v-ons-list-header>World Ranking</v-ons-list-header>
-        <v-ons-list-item >
+      </div> -->
+      <v-ons-list style="margin-top:5px" class="ranklist">
+        <v-ons-list-header class="list-header"><h2>World Ranking</h2>
+        </v-ons-list-header>
+        <v-ons-list-item class="list-item">
           <table cellpadding="5" style="width:100%">
-            <tr>
-              <th>rank</th>
-              <th>name</th>
-              <th>score</th>
-              <th></th>
-            </tr>
             <tr v-for="(score,index) in scores.slice(0,20)" v-bind:key="score.id">
-              <td style="text-align:center">{{ index+1 }}</td>
+              <td style="text-align:center;">{{ index+1 + "."}}</td>
               <td>{{ score.user_name}}</td> 
-              <td>{{ score.score }}</td>
+              <td style="text-align: right;">{{ score.score }}</td>
               <td>
                 <ons-icon
                   @click="playVoice(score.id)"
@@ -73,13 +92,15 @@
 
 <script>
 import Navbar from '../../components/navbar/Navbar';
+import ScoreBoard from '../../components/score-board/ScoreBoard'
 import Twitter from '../../components/twitter/Twitter';
 
 export default {
   name: 'ranking',
   components: {
     Navbar,
-    Twitter
+    Twitter,
+    ScoreBoard
   },
   params: {
     checkid: {
@@ -98,31 +119,40 @@ export default {
       paramsid: null, //paramid
       datanum: 0,
       rank: null, //ランキング
+      results: { 
+        Score: 0,
+        Rank: 10,
+      },
+      voiceID: 0,
     }
   },
+
   mounted() {
     this.axios.get(this.geturl)
     .then((res) => {
       this.scores = res.data;
       this.datanum=res.data.length;//新しいid
       
-      console.log(this.$route.params.checkid);
       this.paramsid = this.$route.params.checkid 
-      console.log(this.paramsid);
       this.checkrank();
     })
     .catch((res) => {
     });
   },
+
   methods: {
     checkrank(){
       for(var i=0; i<this.datanum;i++){
         if(this.scores[i].id==this.paramsid) {
           this.rank = i;
+          this.results = {
+            Score: this.scores[this.rank].score,
+            Rank: this.rank+1,
+          }
+          this.voiceID = this.scores[this.rank].id;
           if(this.rank<20){
             this.alartpop();
           }
-          console.log(this.rank);
 				}
       }
     },
@@ -131,7 +161,6 @@ export default {
           message: user
       });
       this.makeuser=user;
-      console.log(user);
       this.postScore();
     },
     alartpop(){
@@ -142,8 +171,8 @@ export default {
         },
       })
     },
+
     postScore(){
-      console.log(this.paramsid);
       this.axios.patch(this.patchurl, {
         score: {
           score: this.scores[this.rank].score,
@@ -155,6 +184,7 @@ export default {
       });
       this.scores[this.rank].user_name = this.makeuser 
     },
+
     playVoice(id) {
       this.axios.get(`http://k-appdev.com:3001/scores/${id}/voice`,{'responseType': 'blob',})
       .then((res) => {

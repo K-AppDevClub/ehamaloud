@@ -27,6 +27,10 @@
   margin: 1em auto 2em;
   text-align: center;
 }
+p {
+  font-size: 1.1em;
+  line-height: 1.7em;
+}
 #overlay {
   position: fixed;
   display: none;
