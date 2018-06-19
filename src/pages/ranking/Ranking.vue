@@ -49,7 +49,7 @@
                 style="color: orange;">
       </ons-icon>
       <v-ons-list style="margin-top:5px" class="ranklist">
-        <v-ons-list-header class="list-header"><h2>World Ranking</h2>
+        <v-ons-list-header class="list-header"><h2>Ranking</h2>
         </v-ons-list-header>
         <v-ons-list-item class="list-item">
           <table cellpadding="5" style="width:100%">
