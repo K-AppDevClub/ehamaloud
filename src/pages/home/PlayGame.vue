@@ -25,15 +25,19 @@ p {
   bottom: 0;
   background-color: rgba(0,0,0,0.5);
   z-index: 2;
-  color: white;
   cursor: pointer;
+  p{
+    color: white;
+    font-size: 3.5em;
+    padding-top: 60%;
+  }
 }
 </style>
 <template>
   <v-ons-page>
     <navbar navType='brank'></navbar>
     <div id="overlay" @click="off()">
-      <p style="text-align: center; font-size:50px">{{ countdown_num }}</p>
+      <p style="text-align: center;">{{ countdown_num }}</p>
     </div>
     <div class="container-score">
       <graph :spectrums="cur_spectrum"></graph>
