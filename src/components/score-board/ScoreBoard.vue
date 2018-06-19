@@ -80,7 +80,7 @@ export default {
     table{
       margin: auto;
       border-collapse: collapse;
-      height: 90%;
+      height: 80%;
       width: 50%;
       .result-item{
         font-size: 1.2em;
