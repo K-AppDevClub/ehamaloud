@@ -42,29 +42,6 @@
   <ons-page>
     <navbar navType='brank' msg="Result" style="margin-bottom: 0px;"></navbar>
       <score-board :results="results" :voiceID="voiceID"/>
-      <!-- <div v-if="rank">
-        <ons-card>
-          <h2> Ranking: {{rank+1}}  </h2>
-          <h2>Score: {{scores[rank].score}} </h2>
-          <ons-icon
-            @click="playVoice(scores[rank].id)"
-            icon="fa-play-circle-o"
-            size="30px"
-            fixed-width="false"
-            style="color: orange">
-          </ons-icon>
-        </ons-card>
-      </div> -->
-      <!-- <div v-else></div> -->
-      <!-- <div class="flex-container">
-        <div class="action-btn">
-          <twitter v-if="rank" v-bind:score = scores[rank].score></twitter>
-          <twitter v-else></twitter>
-        </div>
-        <div class="action-btn">
-          <v-ons-button  @click="$router.push({ name: 'home'});">リトライ</v-ons-button>
-        </div>
-      </div> -->
       <v-ons-list style="margin-top:5px" class="ranklist">
         <v-ons-list-header class="list-header"><h2>World Ranking</h2>
         </v-ons-list-header>
@@ -73,7 +50,7 @@
             <tr v-for="(score,index) in scores.slice(0,20)" v-bind:key="score.id">
               <td style="text-align:center;">{{ index+1 + "."}}</td>
               <td>{{ score.user_name}}</td> 
-              <td style="text-align: right;">{{ score.score }}</td>
+              <td style="text-align: right;">{{ score.score.toLocaleString() }}</td>
               <td>
                 <ons-icon
                   @click="playVoice(score.id)"

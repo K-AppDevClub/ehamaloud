@@ -7,7 +7,7 @@
             :key="k"
             class="result-item">
           <td class="key">{{ k + ":" }}</td>
-          <td class="value">{{ v }}</td>
+          <td class="value">{{ v.toLocaleString() }}</td>
         </tr>
       </table>
     </div>
