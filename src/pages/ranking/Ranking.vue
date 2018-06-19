@@ -8,16 +8,16 @@
   margin-bottom: 0em;
 
   .list-header {
-    background-color: orange;
+    background-color: #fff;
     h2{
-      color: #fefece;
+      color: #444;
       margin-top: 0px;
-      font-size: 1.9em;
+      font-size: 0.9em;
       padding-top: 0.2em;
-      padding-bottom: 0.2em;
-      letter-spacing: 5.5px;
+      padding-bottom: 0em;
+      letter-spacing: 1.5px;
       font-weight: bold;
-      text-align: center;
+      text-align: left;
     }
   }
 
