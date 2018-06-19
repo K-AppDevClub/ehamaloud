@@ -41,7 +41,7 @@
 <template>
   <ons-page>
     <navbar navType='brank' msg="Result" style="margin-bottom: 0px;"></navbar>
-      <score-board :results="results" :voiceID="voiceID"/>
+      <score-board v-show="!!rank" :results="results" :voiceID="voiceID"/>
       <v-ons-list style="margin-top:5px" class="ranklist">
         <v-ons-list-header class="list-header"><h2>World Ranking</h2>
         </v-ons-list-header>
