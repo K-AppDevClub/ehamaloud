@@ -14,6 +14,31 @@
   margin: 0 10px;
 }
 
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 2;
+  cursor: pointer;
+  p{
+    color: white;
+    font-size: 1.5em;
+    margin: 0.5em auto 0em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+  h1{
+    color: white;
+    margin-top: 60%;
+  }
+}
+
 .mainmenu{
   margin: 0em auto 0em;
   background-color: #fff;
@@ -63,9 +88,15 @@
       <div class="menu">
         <table>
           <tr v-for="item in menuList" :key="item.path">
-            <td @click="$router.push({ name: item.path });">{{ item.str }}</td>
+            <td @click="item.func(item.arg)">{{ item.str }}</td>
           </tr>
         </table>
+      </div>
+      <div id="overlay" @click="off()">
+        <h1 style="text-align: center;">このゲームは？</h1>
+        <p>叫びます。変な声出します。点数でます。競いましょう!!</p>
+        <p>得点の計算方法は、ちょっとかわっているよ。試行錯誤しながら高得点をめざそう！！
+        </p>
       </div>
     </div>
     <!-- <div id="overlay" @click="off()"><h1>Hay!</h1></div>
@@ -85,15 +116,18 @@ export default {
       countdown_num: 3,
       menuList:[
         {
-          path: "home",
+          func: this.go,
+          arg: "home",
           str:  "はじめる",
         },
         {
-          path: "ranking",
+          func: this.go,
+          arg: "ranking",
           str:  "らんきんぐ",
         },
         {
-          path: "help",
+          func: this.on,
+          arg: "",
           str:  "せつめい",
         }
       ]
@@ -105,7 +139,18 @@ export default {
     },
     rmSelected: function(index){
       this.menuList[index].selected = false;
-    }
+    },
+
+    on() {
+      document.getElementById("overlay").style.display = "block";
+    },
+    off() {
+      document.getElementById("overlay").style.display = "none";
+    },
+
+    go(path){
+      this.$router.push({ name: path });
+    },
 
   }
 };
