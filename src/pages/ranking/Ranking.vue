@@ -4,7 +4,7 @@
   width:100%;
   font-size: 1.2em;
   line-height: 1.2em;
-  letter-spacing: -2px;
+  letter-spacing: -1px;
   margin-bottom: 0em;
 
   .list-header {
