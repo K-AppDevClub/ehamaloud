@@ -24,6 +24,15 @@
     <div v-else-if="navType=='back'" class="left">
       <v-ons-back-button>戻る</v-ons-back-button>
     </div>
+    <div v-else-if="navType=='home'" class="left">
+      <ons-icon
+        @click="$router.push({ name: 'main-menu'});"
+        icon="fa-home"
+        size="25px"
+        fixed-width="false"
+        style="color: white">
+      </ons-icon>
+    </div>
     <div class="center" style="font-size: 15px;font-weight:800;">{{ msg }}</div>
   </v-ons-toolbar>
 </template>

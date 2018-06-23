@@ -39,15 +39,8 @@
 
 <template>
   <ons-page>
-    <navbar navType='brank' msg="Result" style="margin-bottom: 0px;"></navbar>
+    <navbar navType='home' msg="Result" style="margin-bottom: 0px;"></navbar>
       <score-board v-show="!!rank" :results="results" :voiceID="voiceID"/>
-      <ons-icon v-show="!rank"
-                @click="$router.push({ name: 'main-menu'});"
-                icon="fa-home"
-                size="30px"
-                fixed-width="false"
-                style="color: orange;">
-      </ons-icon>
       <v-ons-list style="margin-top:5px" class="ranklist">
         <v-ons-list-header class="list-header"><h2>Ranking</h2>
         </v-ons-list-header>
