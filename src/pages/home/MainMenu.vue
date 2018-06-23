@@ -80,7 +80,7 @@
 
 <template>
   <ons-page>
-    <audio :src="music_src" autoplay loop controls></audio>
+    <audio :src="music_src" preload="auto" autoplay loop></audio>
     <div class="mainmenu">
       <div class="title">
         <h1>さけんで、わらって</h1>
