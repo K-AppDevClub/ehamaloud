@@ -80,6 +80,7 @@
 
 <template>
   <ons-page>
+    <audio :src="music_src" autoplay loop controls></audio>
     <div class="mainmenu">
       <div class="title">
         <h1>さけんで、わらって</h1>
@@ -112,6 +113,7 @@ export default {
     return{
       countdown_timer: null,
       countdown_num: 3,
+      music_src: require('../../assets/example.mp3'),
       menuList:[
         {
           func: this.go,
