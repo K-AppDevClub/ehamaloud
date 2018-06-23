@@ -80,14 +80,7 @@
 
 <template>
   <ons-page>
-<<<<<<< HEAD
     <audio :src="music_src" autoplay loop controls></audio>
-    <v-ons-button  @click="$router.push({ name: 'home'});">はじめる</v-ons-button>
-    <v-ons-button  @click="$router.push({ name: 'ranking'});">らんきんぐ</v-ons-button>
-    <v-ons-button  @click="$router.push({ name: 'help'});">せつめい</v-ons-button>
-    <!-- <div id="overlay" @click="off()"><h1>Hay!</h1></div>
-    <button @click="on()">Turn on overlay effect</button> -->
-=======
     <div class="mainmenu">
       <div class="title">
         <h1>さけんで、わらって</h1>
@@ -107,7 +100,6 @@
         </p>
       </div>
     </div>
->>>>>>> 23ab3f33e4be06dae76687c310ca038a5c8f976e
   </ons-page>
 </template>
 
@@ -121,9 +113,7 @@ export default {
     return{
       countdown_timer: null,
       countdown_num: 3,
-<<<<<<< HEAD
       music_src: require('../../assets/example.mp3'),
-=======
       menuList:[
         {
           func: this.go,
@@ -141,7 +131,6 @@ export default {
           str:  "せつめい",
         }
       ]
->>>>>>> 23ab3f33e4be06dae76687c310ca038a5c8f976e
     }
   },
   methods: {
