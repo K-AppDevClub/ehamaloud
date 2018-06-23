@@ -18,6 +18,8 @@ import 'onsenui/css/onsen-css-components.css';
 import '../static/css/onsen-css-components-orange.min.css';
 // import '../static/css/onsen-css-components-pink.min.css';
 
+window.baseUrl = "http://k-appdev.com:3001";
+
 Vue.config.productionTip = false;
 
 Vue.use(Element, { locale });
@@ -30,7 +32,7 @@ Vue.use(VueGoogleMaps, {
 Vue.use(VueOnsen);
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
-Vue.use(VueLocalStorage)
+Vue.use(VueLocalStorage);
 Vue.prototype.$tone = tone;
 
 const router = new VueRouter({

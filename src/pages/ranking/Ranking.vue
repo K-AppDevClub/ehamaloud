@@ -93,8 +93,9 @@ export default {
   data(){
     return{
       index:'',
-      geturl: `http://k-appdev.com:3001/scores`,
-      patchurl: `http://k-appdev.com:3001/scores/${this.$route.params.checkid}`,
+      //geturl: `http://k-appdev.com:3001/scores`,
+      geturl: `${window.baseUrl}/scores`,
+      patchurl: `${window.baseUr}/scores/${this.$route.params.checkid}`,
       scores: [],
       user: '', //popup用ユーザー名
       makeuser: '', //追加するユーザー名
@@ -169,7 +170,7 @@ export default {
     },
 
     playVoice(id) {
-      this.axios.get(`http://k-appdev.com:3001/scores/${id}/voice`,{'responseType': 'blob',})
+      this.axios.get(`${this.$baseurl}/${id}/voice`,{'responseType': 'blob',})
       .then((res) => {
         var audioSrc = URL.createObjectURL(res.data);
         var audio = new Audio(audioSrc);
