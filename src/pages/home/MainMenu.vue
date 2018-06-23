@@ -35,44 +35,74 @@
   }
   h1{
     color: white;
-    margin-top: 60%;
+    // margin-top: 10%;
   }
 }
 
 .mainmenu{
   margin: 0em auto 0em;
-  background-color: #fff;
+  background-color: orange;
   height: 100%;
-  .menu{
-    height: 50%;
-    table{
-      margin: auto;
-      border-collapse: collapse;
-      height: 70%;
-      width: 50%;
-      tr{
-        font-size: 1.2em;
-        border-bottom: 1px solid;
-        border-color: #dedede;
-        color: #333;
-        text-align: center;
-        vertical-align: bottom;
-        &:hover{
-          border-color: orange;
-          color: orange;
+  .flex_container{
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+
+    .logo{
+      img{
+        width:100%;
+      }
+      margin-left: 10px;
+      width: 40%;
+      flex-grow: 1;
+     }
+
+    .menu{
+      flex-grow: 5;
+      table{
+        margin: auto;
+        border-collapse: collapse;
+        height: 100%;
+        width: 80%;
+        tr{
+          font-size: 1.2em;
+          border-bottom: 1px solid;
+          border-color: #333;
+          color: #333;
+          text-align: center;
+          vertical-align: bottom;
+          &:hover{
+            border-color: white;
+            color: white;
+          }
         }
       }
     }
   }
 
+  .top_bar {
+    background-color: #333;
+    width: 100%;
+    height: 50px; 
+  }
+
+  .bottom_bar {
+    background-color: #333;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 50px; 
+  }
+
   .title{
-    padding-top: 200px;
-    color: orange;
+    padding-top: 80px;
+    color: #333;
     h1{
       margin-top: 0em;
       text-align: center;
-      font-size: 2em;
+      font-size: 2.5em;
       font-style: bold;
+      font-weight: 900;
     }
   }
 }
@@ -81,17 +111,24 @@
 <template>
   <ons-page>
     <audio :src="music_src" autoplay loop controls></audio>
-    <div class="mainmenu">
+    <div class="mainmenu" >
+      <div class="top_bar"/>
+      <div class="bottom_bar"/>
+
       <div class="title">
-        <h1>さけんで、わらって</h1>
-        <h1>へんなこえバトル！！</h1>
+        <h1>元気な人選手権</h1>
       </div>
-      <div class="menu">
-        <table>
-          <tr v-for="item in menuList" :key="item.path">
-            <td @click="item.func(item.arg)">{{ item.str }}</td>
-          </tr>
-        </table>
+      <div class="flex_container">
+        <div class="logo">
+          <img :src="image_src">
+        </div>
+        <div class="menu">
+          <table>
+            <tr v-for="item in menuList" :key="item.path">
+              <td @click="item.func(item.arg)">{{ item.str }}</td>
+            </tr>
+          </table>
+        </div>
       </div>
       <div id="describe" @click="off()">
         <h1 style="text-align: center;">このゲームは？</h1>
@@ -114,6 +151,7 @@ export default {
       countdown_timer: null,
       countdown_num: 3,
       music_src: require('../../assets/example.mp3'),
+      image_src: require('../../assets/koe.png'),
       menuList:[
         {
           func: this.go,
