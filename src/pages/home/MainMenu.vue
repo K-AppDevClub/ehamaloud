@@ -87,7 +87,7 @@
 
 <template>
   <ons-page>
-    <audio :src="music_src" autoplay loop controls></audio>
+    <audio :src="music_src" autoplay loop></audio>
     <div class="mainmenu" >
 
     <div class="title">
