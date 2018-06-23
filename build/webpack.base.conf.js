@@ -37,6 +37,11 @@ module.exports = {
       //   }
       // },
       {
+        test: /\.mp3$/,
+        include: SRC,
+        loader: 'file-loader'
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
@@ -71,7 +76,7 @@ module.exports = {
               return url
           },
         }
-      }
+      },
     ]
   }
 }

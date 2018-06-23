@@ -31,6 +31,7 @@
 
 <template>
   <ons-page>
+    <audio :src="music_src" autoplay loop controls></audio>
     <v-ons-button  @click="$router.push({ name: 'home'});">はじめる</v-ons-button>
     <v-ons-button  @click="$router.push({ name: 'ranking'});">らんきんぐ</v-ons-button>
     <v-ons-button  @click="$router.push({ name: 'help'});">せつめい</v-ons-button>
@@ -49,6 +50,7 @@ export default {
     return{
       countdown_timer: null,
       countdown_num: 3,
+      music_src: require('../../assets/example.mp3'),
     }
   },
   mouted() {
