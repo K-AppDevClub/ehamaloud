@@ -41,68 +41,45 @@
 
 .mainmenu{
   margin: 0em auto 0em;
-  background-color: orange;
+  background-color: white;
+  font-family: "Hiragino Sans";	
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
   height: 100%;
-  .flex_container{
-    display: flex;
-    justify-content: center;
-    margin-top: 100px;
 
-    .logo{
-      img{
-        width:100%;
-      }
-      margin-left: 10px;
-      width: 40%;
-      flex-grow: 1;
-     }
-
-    .menu{
-      flex-grow: 5;
-      table{
-        margin: auto;
-        border-collapse: collapse;
-        height: 100%;
-        width: 80%;
-        tr{
-          font-size: 1.2em;
-          border-bottom: 1px solid;
-          border-color: #333;
-          color: #333;
-          text-align: center;
-          vertical-align: bottom;
-          &:hover{
-            border-color: white;
-            color: white;
-          }
-        }
-      }
+  @keyframes yurayura {
+    0% { transform: rotate(40deg); }
+    100% { transform: rotate(-20deg); }
+  }
+  .logo{
+    text-align: center;
+    margin: 0 auto;
+    img{
+      width:70%;
+      animation: yurayura 1s steps(2, start) infinite;
     }
   }
 
-  .top_bar {
-    background-color: #333;
+  .menu{
+    display: flex;
+    justify-content: space-around;
     width: 100%;
-    height: 50px; 
+    .item{
+      font-size: 1.2em;
+      border-bottom: 1px solid;
+      color: #4D4D4D;	
+      border-color: #4D4D4D;
+    }
   }
-
-  .bottom_bar {
-    background-color: #333;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 50px; 
-  }
+  
 
   .title{
-    padding-top: 80px;
-    color: #333;
     h1{
-      margin-top: 0em;
+      color: #4D4D4D;	
       text-align: center;
-      font-size: 2.5em;
-      font-style: bold;
-      font-weight: 900;
+      font-size: 2.7em;
+      line-height: 2.7em;
     }
   }
 }
@@ -112,31 +89,29 @@
   <ons-page>
     <audio :src="music_src" autoplay loop controls></audio>
     <div class="mainmenu" >
-      <div class="top_bar"/>
-      <div class="bottom_bar"/>
 
-      <div class="title">
-        <h1>元気な人選手権</h1>
+    <div class="title">
+      <h1>元気な人選手権</h1>
+    </div>
+      <div class="logo">
+        <img :src="image_src">
       </div>
-      <div class="flex_container">
-        <div class="logo">
-          <img :src="image_src">
+      <div class="menu">
+        <div class="item" 
+              v-for="item in menuList" 
+              :key="item.path"
+              @click="item.func(item.arg)">
+          {{ item.str }}
         </div>
-        <div class="menu">
-          <table>
-            <tr v-for="item in menuList" :key="item.path">
-              <td @click="item.func(item.arg)">{{ item.str }}</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <div id="describe" @click="off()">
-        <h1 style="text-align: center;">このゲームは？</h1>
-        <p>叫びます。変な声出します。点数でます。競いましょう!!</p>
-        <p>得点の計算方法は、ちょっとかわっているよ。試行錯誤しながら高得点をめざそう！！
-        </p>
       </div>
     </div>
+    <div id="describe" @click="off()">
+      <h1 style="text-align: center;">このゲームは？</h1>
+      <p>叫びます。変な声出します。点数でます。競いましょう!!</p>
+      <p>得点の計算方法は、ちょっとかわっているよ。試行錯誤しながら高得点をめざそう！！
+      </p>
+    </div>
+
   </ons-page>
 </template>
 

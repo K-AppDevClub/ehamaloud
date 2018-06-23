@@ -36,7 +36,6 @@ p {
 </style>
 <template>
   <v-ons-page>
-    <navbar navType='brank'></navbar>
     <div id="overlay">
       <p style="text-align: center;">{{ countdown_num }}</p>
     </div>
@@ -237,22 +236,17 @@ export default {
 
 
     postScore(){
-      if(this.rounded_score!=0){
-        console.log(this.audio)
-        var params = new FormData()
-        params.append("score[score]", this.rounded_score)
-        params.append("score[user_name]", "ehama")
-        params.append("score[user_id]", this.user_id)
-        params.append("score[voice_attributes[data]]", this.audio)
-        const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
-        this.axios.post('http://k-appdev.com:3001/scores', params , config)
-        .then(res => {
-          this.checkid = res.data.id
-          this.$router.push({ name: 'ranking' , params:{checkid: this.checkid}});
-        }).catch(res => {console.log(res)});
-      }else{
-        this.$router.push({ name: 'ranking' }); 
-      }
+      var params = new FormData()
+      params.append("score[score]", this.rounded_score)
+      params.append("score[user_name]", "ehama")
+      params.append("score[user_id]", this.user_id)
+      params.append("score[voice_attributes[data]]", this.audio)
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
+      this.axios.post('http://k-appdev.com:3001/scores', params , config)
+      .then(res => {
+        this.checkid = res.data.id
+        this.$router.push({ name: 'ranking' , params:{checkid: this.checkid}});
+      }).catch(res => {console.log(res)});
     },
 
     getUserID(){
