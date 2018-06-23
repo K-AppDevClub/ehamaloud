@@ -11,7 +11,8 @@ import VueAxios from 'vue-axios';
 import 'onsenui/css/onsenui.css';
 import App from './App';
 import routes from './routes';
-
+import VueLocalStorage from 'vue-localstorage'
+ 
 import 'onsenui/css/onsen-css-components.css';
 import '../static/css/onsen-css-components-orange.min.css';
 // import '../static/css/onsen-css-components-pink.min.css';
@@ -28,6 +29,7 @@ Vue.use(VueGoogleMaps, {
 Vue.use(VueOnsen);
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
+Vue.use(VueLocalStorage)
 
 const router = new VueRouter({
   mode: 'hash',

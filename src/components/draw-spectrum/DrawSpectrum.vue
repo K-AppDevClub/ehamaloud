@@ -12,7 +12,7 @@ export default{
   data() {
     return {
       ctx: null, margin: 100,
-      size: { margin:10, width: document.documentElement.clientWidth, height: document.documentElement.clientHeight }
+      size: { margin:10, width: document.documentElement.clientWidth, height: document.documentElement.clientHeight-100 }
     }
   },
 
@@ -31,7 +31,7 @@ export default{
       this.ctx.fillStyle = 'rgb(0,0,0)'
       this.ctx.fillRect(0, 0, w, h+margin*2);
       each(spectrums, (spe, i, len=spectrums.length) => { 
-        var x = (i / len) * w, y = (1 - (spe / 255)) * h + margin;
+        var x = (i / len) * w, y = (1 - (spe/128)) * h + margin;
         if (i === 0) this.ctx.moveTo(x, y);
         else         this.ctx.lineTo(x, y);
       });

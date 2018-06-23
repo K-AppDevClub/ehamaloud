@@ -7,26 +7,14 @@
 }
 .container-score {
   text-align: center;
-  margin: 1em auto 1em;
+  margin: 0em auto 0em;
 }
-.score-board {
-  text-align: center;
-  font-size: 1.5em;
+
+p {
+  font-size: 1.1em;
+  line-height: 1.7em;
 }
-.chrt {
-  text-align: center;
-  margin: 1em auto 0;
-  width:90%;
-}
-.flex-container {
-  display: inline-flex;
-  justify-content: space-around;
-}
-.container-buttons {
-  align-items: baseline;
-  margin: 1em auto 2em;
-  text-align: center;
-}
+
 #overlay {
   position: fixed;
   display: none;
@@ -38,24 +26,24 @@
   bottom: 0;
   background-color: rgba(0,0,0,0.5);
   z-index: 2;
-  color: white;
   cursor: pointer;
+  p{
+    color: white;
+    font-size: 3.5em;
+    padding-top: 60%;
+  }
 }
 </style>
 <template>
   <v-ons-page>
     <navbar navType='brank'></navbar>
-    <div id="overlay" @click="off()">
-      <p style="text-align: center; font-size:50px">{{ countdown_num }}</p>
+    <div id="overlay">
+      <p style="text-align: center;">{{ countdown_num }}</p>
     </div>
     <div class="container-score">
       <graph :spectrums="cur_spectrum"></graph>
-      <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar>
-    </div>
-    <div class="container-buttons">
-      <div class="flex-container">
-        <v-ons-button style="margin: 6px 0" @click="startRecording()">開始</v-ons-button>
-      </div>
+      <!-- <v-ons-progress-bar :value="Math.floor(time/ 30)" secondary-value="100" modifier=":width=100"></v-ons-progress-bar> -->
+      <progress-bar :time="time"/>
     </div>
   </v-ons-page>
 </template>
@@ -65,8 +53,11 @@ import LoadingIndicator from '../../components/loading-indicator/LoadingIndicato
 import Navbar from '../../components/navbar/Navbar';
 import Ranking from '../ranking/Ranking';
 import Chart from './chart'
+import ProgressBar from '../../components/progress-bar/ProgressBar'
 import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
+import fft from 'fft-js'
+import { uuid } from 'vue-uuid'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.device.capture || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -80,6 +71,7 @@ export default {
     Ranking,
     Chart,
     Graph,
+    ProgressBar,
   },
   params: {
     checkid: {
@@ -118,12 +110,14 @@ export default {
       chartData: {}, 
       socre_list: [], 
       idx: 0,
+      user_id: null,
       countdown_timer: null,
       countdown_num: 3,
     }
   },
   mounted(){
     this.clear();
+    this.user_id = this.getUserID();
     this.on();
     this.countdown_timer = setInterval(()=>{
       this.countdown_num -= 1;
@@ -179,12 +173,16 @@ export default {
       var bufferData = new Float32Array(this.bufferSize);
       for (var i = 0; i < this.bufferSize; i++) bufferData[i] = input[i];
       // 波形を解析
-      var spectrums = new Uint8Array(this.audioAnalyser.frequencyBinCount);
-      this.audioAnalyser.getByteFrequencyData(spectrums);
+      var spectrums = new Float32Array(this.audioAnalyser.frequencyBinCount);
+      this.audioAnalyser.getFloatFrequencyData(spectrums);
 
       // 描画
+      spectrums = spectrums.map(Math.abs).map(Math.log10).map((x)=>{return x*10})
+      spectrums =  fft.util.fftMag(fft.fft(spectrums), 8192)
+      spectrums = calcScore.smoothing(spectrums.slice(48,256))
       this.cur_spectrum = spectrums
-      this.score += (this.socre_list[this.idx++] = calcScore.calc(this.preSpectrums, spectrums));
+      this.score += (this.socre_list[this.idx++] = calcScore.calc2(this.preSpectrums, spectrums));
+      console.log(this.score)
       this.preSpectrums = spectrums;
       if ((this.time = Date.now() - this.startDate) > 3000) this.endRecording();
     },
@@ -237,6 +235,7 @@ export default {
         var params = new FormData()
         params.append("score[score]", this.rounded_score)
         params.append("score[user_name]", "ehama")
+        params.append("score[user_id]", this.user_id)
         params.append("score[voice_attributes[data]]", this.audio)
         const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
         this.axios.post('http://k-appdev.com:3001/scores', params , config)
@@ -248,6 +247,16 @@ export default {
         this.$router.push({ name: 'ranking' }); 
       }
     },
+
+    getUserID(){
+      var userID = null;
+      if((userID=localStorage.getItem("user_id"))==null){ 
+        userID = uuid.v4();
+        localStorage.setItem("user_id", userID)
+      } 
+      return userID;
+    }
+
   },
 };
 </script>
