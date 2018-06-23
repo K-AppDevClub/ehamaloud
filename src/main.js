@@ -9,9 +9,10 @@ import VueRouter from 'vue-router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import 'onsenui/css/onsenui.css';
+import tone from 'tone';
 import App from './App';
 import routes from './routes';
-import VueLocalStorage from 'vue-localstorage'
+import VueLocalStorage from 'vue-localstorage';
  
 import 'onsenui/css/onsen-css-components.css';
 import '../static/css/onsen-css-components-orange.min.css';
@@ -30,6 +31,7 @@ Vue.use(VueOnsen);
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(VueLocalStorage)
+Vue.prototype.$tone = tone;
 
 const router = new VueRouter({
   mode: 'hash',

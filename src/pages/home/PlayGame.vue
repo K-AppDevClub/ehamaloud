@@ -58,6 +58,7 @@ import Graph from '../../components/draw-spectrum/DrawSpectrum'
 import calcScore from '../../services/CalcScore'
 import fft from 'fft-js'
 import { uuid } from 'vue-uuid'
+import Beep from '../../components/sound/beep.js'
 
 // クロスブラウザ定義
 navigator.getUserMedia = navigator.getUserMedia || navigator.device.capture || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -65,6 +66,7 @@ function each(xs, fn){ for(var i = 0; i < xs.length; i++) fn(xs[i], i); }
 
 export default {
   name: 'posts-page',
+  mixins: [Beep],
   components: {
     LoadingIndicator,
     Navbar,
@@ -119,6 +121,7 @@ export default {
     this.clear();
     this.user_id = this.getUserID();
     this.on();
+    this.startBeep();
     this.countdown_timer = setInterval(()=>{
       this.countdown_num -= 1;
       if(this.countdown_num<=0){
@@ -147,6 +150,9 @@ export default {
       this.clear();
       this.audioContext =  new AudioContext();
       this.recordingFlg = true;
+      setTimeout(()=>{
+        this.melody.stop();
+      },300)
       navigator.getUserMedia({audio: true}, this.whenGetUserMedia, (e) => { console.log(e) })
     },
 
@@ -198,6 +204,7 @@ export default {
       this.recordingFlg = false;
       this.stopMediaRecording();
       this.audioContext.close();
+      this.finishBeep();
     },
 
     startMediaRecording(stream){
