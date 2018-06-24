@@ -1,4 +1,5 @@
 <style lang='scss' scoped>
+@import url(https://fonts.googleapis.com/earlyaccess/notosansjp.css);
 .ranklist{
   width:100%
 }
@@ -80,6 +81,7 @@
       text-align: center;
       font-size: 2.7em;
       line-height: 2.7em;
+      font-family: 'Noto Sans JP';
     }
   }
 }
