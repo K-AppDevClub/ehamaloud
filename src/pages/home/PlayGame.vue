@@ -242,7 +242,7 @@ export default {
       params.append("score[user_id]", this.user_id)
       params.append("score[voice_attributes[data]]", this.audio)
       const config = { headers: { 'Content-Type': 'multipart/form-data' } };      
-      this.axios.post('http://k-appdev.com:3001/scores', params , config)
+      this.axios.post(`${window.baseUrl}/scores`, params , config)
       .then(res => {
         this.checkid = res.data.id
         this.$router.push({ name: 'ranking' , params:{checkid: this.checkid}});

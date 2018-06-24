@@ -18,7 +18,7 @@ import 'onsenui/css/onsen-css-components.css';
 import '../static/css/onsen-css-components-orange.min.css';
 // import '../static/css/onsen-css-components-pink.min.css';
 
-window.baseUrl = "http://k-appdev.com:3001";
+window.baseUrl = 'http://k-appdev.com:3001';
 
 Vue.config.productionTip = false;
 

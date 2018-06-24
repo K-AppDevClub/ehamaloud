@@ -39,8 +39,15 @@
 
 <template>
   <ons-page>
-    <navbar navType='home' msg="Result" style="margin-bottom: 0px;"></navbar>
+    <navbar navType='brank' msg="Result" style="margin-bottom: 0px;"></navbar>
       <score-board v-show="!!rank" :results="results" :voiceID="voiceID"/>
+      <ons-icon v-show="!rank"
+                @click="$router.push({ name: 'main-menu'});"
+                icon="fa-home"
+                size="30px"
+                fixed-width="false"
+                style="color: orange;">
+      </ons-icon>
       <v-ons-list style="margin-top:5px" class="ranklist">
         <v-ons-list-header class="list-header"><h2>Ranking</h2>
         </v-ons-list-header>
@@ -163,7 +170,7 @@ export default {
     },
 
     playVoice(id) {
-      this.axios.get(`${this.$baseurl}/${id}/voice`,{'responseType': 'blob',})
+      this.axios.get(`${window.baseUrl}/scores/${id}/voice`,{'responseType': 'blob',})
       .then((res) => {
         var audioSrc = URL.createObjectURL(res.data);
         var audio = new Audio(audioSrc);
