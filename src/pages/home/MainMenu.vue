@@ -64,8 +64,10 @@
 
   .menu{
     display: flex;
+    // justify-content: space-between;
     justify-content: space-around;
     width: 100%;
+    margin: 7em 0 2em;
     .item{
       font-size: 1.2em;
       border-bottom: 1px solid;
@@ -82,6 +84,7 @@
       font-size: 2.7em;
       line-height: 2.7em;
       font-family: 'Noto Sans JP';
+      margin: 0;
     }
   }
 }
